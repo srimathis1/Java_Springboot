@@ -1,27 +1,29 @@
 package com.srimathi.project1sb;
 
 import com.srimathi.project1sb.model.Traveler;
+import com.srimathi.project1sb.service.TravelService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/travel")
 public class TravelController {
 
-    private List<Traveler> travelers = new ArrayList<>();
+    private final TravelService service;
 
-    // ADD traveler
-    @PostMapping("/add")
-    public Traveler addTraveler(@RequestBody Traveler traveler) {
-        travelers.add(traveler);
-        return traveler;
+    public TravelController(TravelService service) {
+        this.service = service;
     }
 
-    // GET all travelers
+    @PostMapping("/add")
+    public Traveler addTraveler(@Valid @RequestBody Traveler traveler) {
+        return service.addTraveler(traveler);
+    }
+
     @GetMapping("/all")
     public List<Traveler> getAllTravelers() {
-        return travelers;
+        return service.getAllTravelers();
     }
 }
