@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Travel System</title>
+
+    <style>
+        body { margin:0; font-family: Arial; }
+
+        .sidebar {
+            width: 200px;
+            height: 100vh;
+            background: #222;
+            color: white;
+            padding: 15px;
+            position: fixed;
+        }
+
+        .sidebar button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 8px;
+        }
+
+        .main {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        .card {
+            background: #f4f4f4;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h3>Menu</h3>
+    <button onclick="showPage('dashboard')">Dashboard</button>
+    <button onclick="showPage('search')">Search</button>
+    <button onclick="showPage('booking')">Bookings</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <!-- DASHBOARD -->
+    <div id="dashboardPage">
+        <h2>📊 Dashboard</h2>
+        <pre id="dashboard"></pre>
+    </div>
+
+    <!-- SEARCH -->
+    <div id="searchPage" style="display:none">
+        <h2>🔍 Search Routes</h2>
+
+        <input id="source" placeholder="Source">
+        <input id="destination" placeholder="Destination">
+        <input id="budget" placeholder="Budget">
+        <button onclick="search()">Search</button>
+
+        <h3 id="suggestion"></h3>
+        <div id="routes"></div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div id="bookingPage" style="display:none">
+        <h2>📘 Booking History</h2>
+
+        <input id="name" placeholder="Enter Name">
+        <button onclick="loadHistory()">Load</button>
+
+        <div id="history"></div>
+    </div>
+
+</div>
+
+<script>
+
+    // PAGE SWITCH
+    function showPage(page){
+        dashboardPage.style.display="none";
+        searchPage.style.display="none";
+        bookingPage.style.display="none";
+
+        if(page==="dashboard") dashboardPage.style.display="block";
+        if(page==="search") searchPage.style.display="block";
+        if(page==="booking") bookingPage.style.display="block";
+    }
+
+    // SEARCH
+    function search(){
+
+        fetch(`/route/smart-search?source=${source.value}&destination=${destination.value}&budget=${budget.value}&preference=cheapest`)
+            .then(r=>r.json())
+            .then(data=>{
+
+                routes.innerHTML="";
+
+                if(data.length===0){
+                    routes.innerHTML="<h3>No routes found</h3>";
+                    return;
+                }
+
+                // AI suggestion
+                fetch(`/route/suggest?source=${source.value}&destination=${destination.value}&budget=${budget.value}`)
+                    .then(r=>r.text())
+                    .then(msg=>suggestion.innerText=msg);
+
+                data.forEach(r=>{
+                    routes.innerHTML+=`
+        <div class="card">
+            <h3>${r.source} → ${r.destination}</h3>
+            <p>${r.transportType} | ₹${r.price}</p>
+            <p>Seats: ${r.availableSeats}</p>
+
+            <button onclick="book(${r.id})">Book</button>
+        </div>`;
+                });
+
+            });
+    }
+
+    // BOOK
+    function book(id){
+
+        fetch("/booking/create",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                travelerName:name.value,
+                routeId:id
+            })
+        })
+            .then(r=>r.json())
+            .then(data=>{
+                alert(data.status);
+                loadDashboard();
+            });
+    }
+
+    // HISTORY
+    function loadHistory(){
+
+        fetch(`/booking/history?travelerName=${name.value}`)
+            .then(r=>r.json())
+            .then(data=>{
+
+                history.innerHTML="";
+
+                data.forEach(b=>{
+                    history.innerHTML+=`
+        <div class="card">
+            <p>ID: ${b.id}</p>
+            <p>Status: ${b.status}</p>
+
+            <button onclick="cancel(${b.id})">Cancel</button>
+        </div>`;
+                });
+
+            });
+    }
+
+    // CANCEL
+    function cancel(id){
+
+        fetch(`/booking/cancel/${id}`,{method:"POST"})
+            .then(r=>r.text())
+            .then(msg=>{
+                alert(msg);
+                loadHistory();
+                loadDashboard();
+            });
+    }
+
+    // DASHBOARD
+    function loadDashboard(){
+
+        fetch("/dashboard/bookings")
+            .then(r=>r.json())
+            .then(b=>{
+
+                fetch("/dashboard/agency")
+                    .then(r=>r.json())
+                    .then(a=>{
+
+                        dashboard.innerText =
+                            "BOOKINGS\n" + JSON.stringify(b,null,2) +
+                            "\n\nAGENCY\n" + JSON.stringify(a,null,2);
+
+                    });
+            });
+    }
+
+    // AUTO REFRESH
+    setInterval(loadDashboard,3000);
+
+    // LOAD ON START
+    window.onload=loadDashboard;
+
+</script>
+
+</body>
+</html>

@@ -13,30 +13,30 @@ public class Route {
     private String destination;
     private String transportType;
     private int availableSeats;
-
-    // 🔥 REQUIRED FIELDS
     private double price;
     private int distance;
 
-    public Route() {}
+    private int bookingCount;
+    private int safetyScore;
 
+    // getters & setters
     public Long getId() { return id; }
     public String getSource() { return source; }
     public String getDestination() { return destination; }
     public String getTransportType() { return transportType; }
     public int getAvailableSeats() { return availableSeats; }
-
-    // 🔥 IMPORTANT (these fix your error)
     public double getPrice() { return price; }
     public int getDistance() { return distance; }
+    public int getBookingCount() { return bookingCount; }
+    public int getSafetyScore() { return safetyScore; }
 
     public void setId(Long id) { this.id = id; }
     public void setSource(String source) { this.source = source; }
     public void setDestination(String destination) { this.destination = destination; }
     public void setTransportType(String transportType) { this.transportType = transportType; }
     public void setAvailableSeats(int availableSeats) { this.availableSeats = availableSeats; }
-
-    // 🔥 IMPORTANT setters
     public void setPrice(double price) { this.price = price; }
     public void setDistance(int distance) { this.distance = distance; }
+    public void setBookingCount(int bookingCount) { this.bookingCount = bookingCount; }
+    public void setSafetyScore(int safetyScore) { this.safetyScore = safetyScore; }
 }

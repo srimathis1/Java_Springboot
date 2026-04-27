@@ -5,7 +5,7 @@ import com.srimathi.project1sb.service.RouteService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/route")
 public class RouteController {
@@ -16,12 +16,19 @@ public class RouteController {
         this.service = service;
     }
 
+    // ADD ROUTE
     @PostMapping("/add")
     public Route addRoute(@RequestBody Route route) {
         return service.addRoute(route);
     }
 
-    // 🔥 UPDATED SEARCH
+    // GET ALL ROUTES
+    @GetMapping("/all")
+    public List<Route> getAllRoutes() {
+        return service.getAllRoutes();
+    }
+
+    // SEARCH
     @GetMapping("/smart-search")
     public List<Route> smartSearch(@RequestParam String source,
                                    @RequestParam String destination,
@@ -30,11 +37,11 @@ public class RouteController {
         return service.smartSearch(source, destination, budget, preference);
     }
 
-    // 🔥 BEST ROUTE API
-    @GetMapping("/best")
-    public Route bestRoute(@RequestParam String source,
-                           @RequestParam String destination,
-                           @RequestParam double budget) {
-        return service.getBestRoute(source, destination, budget);
+    // 🔥 AI SUGGESTION
+    @GetMapping("/suggest")
+    public String suggest(@RequestParam String source,
+                          @RequestParam String destination,
+                          @RequestParam double budget) {
+        return service.getBestSuggestion(source, destination, budget);
     }
 }

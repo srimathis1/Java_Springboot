@@ -1,0 +1,75 @@
+package com.srimathi.project1sb.service;
+
+import com.srimathi.project1sb.model.Booking;
+import com.srimathi.project1sb.model.Route;
+import com.srimathi.project1sb.repository.BookingRepository;
+import com.srimathi.project1sb.repository.RouteRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+public class DashboardService {
+
+    private final BookingRepository bookingRepo;
+    private final RouteRepository routeRepo;
+
+    public DashboardService(BookingRepository bookingRepo, RouteRepository routeRepo) {
+        this.bookingRepo = bookingRepo;
+        this.routeRepo = routeRepo;
+    }
+
+    // 📊 BOOKINGS ANALYTICS
+    public Map<String, Object> bookings() {
+
+        List<Booking> list = bookingRepo.findAll();
+
+        long confirmed = list.stream()
+                .filter(b -> "CONFIRMED".equalsIgnoreCase(b.getStatus()))
+                .count();
+
+        long cancelled = list.stream()
+                .filter(b -> "CANCELLED".equalsIgnoreCase(b.getStatus()))
+                .count();
+
+        double revenue = list.stream()
+                .filter(b -> "CONFIRMED".equalsIgnoreCase(b.getStatus()))
+                .mapToDouble(b -> {
+                    Route r = routeRepo.findById(b.getRouteId()).orElse(null);
+                    return r != null ? r.getPrice() : 0;
+                }).sum();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("total", list.size());
+        map.put("confirmed", confirmed);
+        map.put("cancelled", cancelled);
+        map.put("revenue", revenue);
+
+        return map;
+    }
+
+    // 🏆 ROUTE ANALYTICS
+    public Map<String, Object> agency() {
+
+        List<Route> routes = routeRepo.findAll();
+
+        int totalBookings = routes.stream()
+                .mapToInt(Route::getBookingCount)
+                .sum();
+
+        Route top = routes.stream()
+                .max(Comparator.comparing(Route::getBookingCount))
+                .orElse(null);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("routes", routes.size());
+        map.put("totalBookings", totalBookings);
+
+        if (top != null) {
+            map.put("topRoute",
+                    top.getSource() + " → " + top.getDestination());
+        }
+
+        return map;
+    }
+}

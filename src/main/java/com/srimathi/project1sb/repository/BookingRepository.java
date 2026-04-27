@@ -1,0 +1,12 @@
+package com.srimathi.project1sb.repository;
+
+import com.srimathi.project1sb.model.Booking;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+
+    // 🔥 Feature 1: get bookings by traveler
+    List<Booking> findByTravelerName(String travelerName);
+}
