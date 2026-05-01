@@ -1,35 +1,49 @@
-public Map<String, Object> agency() {
+package com.srimathi.project1sb.service;
 
-    Map<String, Object> map = new HashMap<>();
+import com.srimathi.project1sb.model.Route;
+import com.srimathi.project1sb.repository.RouteRepository;
+import com.srimathi.project1sb.repository.UserRepository;
+import com.srimathi.project1sb.repository.BookingRepository;
+import org.springframework.stereotype.Service;
 
-    long totalRoutes = routeRepo.count();
-    long totalUsers = userRepo.count();
-    long totalBookings = bookingRepo.count();
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    // today's bookings
-    LocalDate today = LocalDate.now();
-    long todayBookings = bookingRepo.findAll().stream()
-            .filter(b -> b.getCreatedAt() != null &&
-                    b.getCreatedAt().toLocalDate().equals(today))
-            .count();
+@Service
+public class DashboardService {
 
-    // transport-wise
-    List<Route> routes = routeRepo.findAll();
+    private final UserRepository userRepo;
+    private final RouteRepository routeRepo;
+    private final BookingRepository bookingRepo;
 
-    long trainCount = routes.stream()
-            .filter(r -> "Train".equalsIgnoreCase(r.getTransportType()))
-            .count();
+    public DashboardService(UserRepository userRepo,
+                            RouteRepository routeRepo,
+                            BookingRepository bookingRepo) {
+        this.userRepo = userRepo;
+        this.routeRepo = routeRepo;
+        this.bookingRepo = bookingRepo;
+    }
 
-    long flightCount = routes.stream()
-            .filter(r -> "Flight".equalsIgnoreCase(r.getTransportType()))
-            .count();
+    public Map<String, Object> agency() {
 
-    map.put("totalRoutes", totalRoutes);
-    map.put("totalUsers", totalUsers);
-    map.put("totalBookings", totalBookings);
-    map.put("todayBookings", todayBookings);
-    map.put("trainRoutes", trainCount);
-    map.put("flightRoutes", flightCount);
+        List<Route> routes = routeRepo.findAll();
 
-    return map;
+        Map<String, Object> map = new HashMap<>();
+
+        // ✅ UNIQUE ROUTES
+        long uniqueRoutes = routes.stream()
+                .map(r -> r.getSource() + "-" + r.getDestination() + "-" + r.getTransportType())
+                .distinct()
+                .count();
+
+        map.put("routes", uniqueRoutes);
+
+        map.put("totalBookings", 0);
+
+        map.put("topRoute", routes.isEmpty() ? "N/A" :
+                routes.get(0).getSource() + " -> " + routes.get(0).getDestination());
+
+        return map;
+    }
 }
