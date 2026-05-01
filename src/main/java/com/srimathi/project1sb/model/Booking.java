@@ -11,17 +11,17 @@ public class Booking {
 
     private String travelerName;
     private Long routeId;
-    private String status; // CONFIRMED / FAILED / CANCELLED
+    private String status;
 
-    public Booking() {}
-
+    // getters setters
     public Long getId() { return id; }
-    public String getTravelerName() { return travelerName; }
-    public Long getRouteId() { return routeId; }
-    public String getStatus() { return status; }
 
-    public void setId(Long id) { this.id = id; }
+    public String getTravelerName() { return travelerName; }
     public void setTravelerName(String travelerName) { this.travelerName = travelerName; }
+
+    public Long getRouteId() { return routeId; }
     public void setRouteId(Long routeId) { this.routeId = routeId; }
+
+    public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 }

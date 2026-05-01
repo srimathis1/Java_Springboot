@@ -4,7 +4,9 @@ import com.srimathi.project1sb.model.Route;
 import com.srimathi.project1sb.repository.RouteRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RouteService {
@@ -15,24 +17,31 @@ public class RouteService {
         this.repo = repo;
     }
 
-    public Route addRoute(Route r) {
-        r.setSafetyScore(calcSafety(r));
-        return repo.save(r);
+    public Route addRoute(Route route) {
+        return repo.save(route);
     }
 
-    public List<Route> search(String source, String dest, double budget) {
-        return repo.findBySourceIgnoreCaseAndDestinationIgnoreCase(source, dest)
-                .stream()
-                .filter(r -> r.getPrice() <= budget && r.getAvailableSeats() > 0)
-                .sorted(Comparator.comparing(Route::getPrice))
-                .toList();
+    public List<Route> getAllRoutes() {
+        return repo.findAll();
     }
 
-    private int calcSafety(Route r) {
-        if (r.getTransportType().equalsIgnoreCase("Flight")) return 9;
-        if (r.getTransportType().equalsIgnoreCase("Train")) return 8;
-        return 6;
+    public List<Route> smartSearch(String source, String destination, double budget, String preference) {
+
+        List<Route> list = repo.findAll().stream()
+                .filter(r -> r.getSource().equalsIgnoreCase(source))
+                .filter(r -> r.getDestination().equalsIgnoreCase(destination))
+                .filter(r -> r.getPrice() <= budget)
+                .collect(Collectors.toList());
+
+        if (preference.equalsIgnoreCase("cheapest")) {
+            list.sort(Comparator.comparing(Route::getPrice));
+        }
+
+        return list;
     }
 
-    public List<Route> all() { return repo.findAll(); }
+    public Route getBestSuggestion(String source, String destination, double budget) {
+        List<Route> list = smartSearch(source, destination, budget, "cheapest");
+        return list.isEmpty() ? null : list.get(0);
+    }
 }
