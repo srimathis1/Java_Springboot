@@ -2,7 +2,6 @@ package com.srimathi.project1sb;
 
 import com.srimathi.project1sb.model.Booking;
 import com.srimathi.project1sb.service.BookingService;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController

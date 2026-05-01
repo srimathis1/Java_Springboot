@@ -1,49 +1,35 @@
-package com.srimathi.project1sb.service;
+public Map<String, Object> agency() {
 
-import com.srimathi.project1sb.model.*;
-import com.srimathi.project1sb.repository.*;
-import org.springframework.stereotype.Service;
+    Map<String, Object> map = new HashMap<>();
 
-import java.util.*;
+    long totalRoutes = routeRepo.count();
+    long totalUsers = userRepo.count();
+    long totalBookings = bookingRepo.count();
 
-@Service
-public class DashboardService {
+    // today's bookings
+    LocalDate today = LocalDate.now();
+    long todayBookings = bookingRepo.findAll().stream()
+            .filter(b -> b.getCreatedAt() != null &&
+                    b.getCreatedAt().toLocalDate().equals(today))
+            .count();
 
-    private final BookingRepository bookingRepo;
-    private final RouteRepository routeRepo;
+    // transport-wise
+    List<Route> routes = routeRepo.findAll();
 
-    public DashboardService(BookingRepository b, RouteRepository r) {
-        this.bookingRepo = b;
-        this.routeRepo = r;
-    }
+    long trainCount = routes.stream()
+            .filter(r -> "Train".equalsIgnoreCase(r.getTransportType()))
+            .count();
 
-    public Map<String,Object> bookings() {
+    long flightCount = routes.stream()
+            .filter(r -> "Flight".equalsIgnoreCase(r.getTransportType()))
+            .count();
 
-        List<Booking> list = bookingRepo.findAll();
+    map.put("totalRoutes", totalRoutes);
+    map.put("totalUsers", totalUsers);
+    map.put("totalBookings", totalBookings);
+    map.put("todayBookings", todayBookings);
+    map.put("trainRoutes", trainCount);
+    map.put("flightRoutes", flightCount);
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("total", list.size());
-        map.put("confirmed", list.stream().filter(x->"CONFIRMED".equals(x.getStatus())).count());
-        map.put("cancelled", list.stream().filter(x->"CANCELLED".equals(x.getStatus())).count());
-
-        return map;
-    }
-
-    public Map<String,Object> agency() {
-
-        List<Route> routes = routeRepo.findAll();
-
-        Map<String,Object> map = new HashMap<>();
-        map.put("routes", routes.size());
-
-        int totalBookings = routes.stream().mapToInt(Route::getBookingCount).sum();
-        map.put("totalBookings", totalBookings);
-
-        Route top = routes.stream().max((a,b)->a.getBookingCount()-b.getBookingCount()).orElse(null);
-
-        if(top!=null)
-            map.put("topRoute", top.getSource()+" → "+top.getDestination());
-
-        return map;
-    }
+    return map;
 }

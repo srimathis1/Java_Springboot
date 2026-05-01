@@ -4,7 +4,6 @@ import com.srimathi.project1sb.model.Booking;
 import com.srimathi.project1sb.model.Route;
 import com.srimathi.project1sb.repository.BookingRepository;
 import com.srimathi.project1sb.repository.RouteRepository;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,14 +19,13 @@ public class BookingService {
 
     public Booking createBooking(Booking booking) {
 
-        Route route = routeRepo.findById(booking.getRoute().getId())
+        Route route = routeRepo.findById(booking.getRouteId())
                 .orElseThrow(() -> new RuntimeException("Route not found"));
 
         if (route.getAvailableSeats() <= 0) {
             throw new RuntimeException("No seats available");
         }
 
-        // ✅ decrease seats
         route.setAvailableSeats(route.getAvailableSeats() - 1);
         routeRepo.save(route);
 

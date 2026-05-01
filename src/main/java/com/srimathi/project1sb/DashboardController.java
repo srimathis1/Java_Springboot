@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/dashboard")
 public class DashboardController {
 
@@ -16,11 +16,7 @@ public class DashboardController {
         this.service = service;
     }
 
-    @GetMapping("/bookings")
-    public Map<String, Object> bookings() {
-        return service.bookings();
-    }
-
+    // ✅ ONLY ONE API (CLEAN)
     @GetMapping("/agency")
     public Map<String, Object> agency() {
         return service.agency();

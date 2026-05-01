@@ -1,8 +1,5 @@
 package com.srimathi.project1sb;
 
-import com.srimathi.project1sb.model.Route;
-import com.srimathi.project1sb.repository.RouteRepository;
-
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -17,13 +14,21 @@ public class RouteController {
         this.repo = repo;
     }
 
+    // ✅ Add Route
     @PostMapping("/add")
     public Route addRoute(@RequestBody Route route) {
         return repo.save(route);
     }
 
+    // ✅ Get All Routes
     @GetMapping("/all")
     public List<Route> getAllRoutes() {
         return repo.findAll();
+    }
+
+    // ✅ Delete Route
+    @DeleteMapping("/{id}")
+    public void deleteRoute(@PathVariable Long id) {
+        repo.deleteById(id);
     }
 }
