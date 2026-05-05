@@ -3,7 +3,6 @@ package com.srimathi.project1sb.service;
 import com.srimathi.project1sb.model.Route;
 import com.srimathi.project1sb.repository.RouteRepository;
 import com.srimathi.project1sb.repository.UserRepository;
-import com.srimathi.project1sb.repository.BookingRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -13,23 +12,22 @@ import java.util.Map;
 @Service
 public class DashboardService {
 
-    private final UserRepository userRepo;
     private final RouteRepository routeRepo;
-    private final BookingRepository bookingRepo;
+    private final UserRepository userRepo;
 
-    public DashboardService(UserRepository userRepo,
-                            RouteRepository routeRepo,
-                            BookingRepository bookingRepo) {
-        this.userRepo = userRepo;
+    public DashboardService(RouteRepository routeRepo, UserRepository userRepo) {
         this.routeRepo = routeRepo;
-        this.bookingRepo = bookingRepo;
+        this.userRepo = userRepo;
     }
 
-    public Map<String, Object> agency() {
+    public Map<String, Object> getDashboard() {
 
         List<Route> routes = routeRepo.findAll();
 
         Map<String, Object> map = new HashMap<>();
+
+        // ✅ USERS
+        map.put("users", userRepo.count());
 
         // ✅ UNIQUE ROUTES
         long uniqueRoutes = routes.stream()
@@ -39,10 +37,26 @@ public class DashboardService {
 
         map.put("routes", uniqueRoutes);
 
-        map.put("totalBookings", 0);
+        // ✅ TRAIN ROUTES
+        long trainCount = routes.stream()
+                .filter(r -> r.getTransportType().equalsIgnoreCase("train"))
+                .map(r -> r.getSource() + "-" + r.getDestination())
+                .distinct()
+                .count();
 
-        map.put("topRoute", routes.isEmpty() ? "N/A" :
-                routes.get(0).getSource() + " -> " + routes.get(0).getDestination());
+        map.put("trainRoutes", trainCount);
+
+        // ✅ FLIGHT ROUTES
+        long flightCount = routes.stream()
+                .filter(r -> r.getTransportType().equalsIgnoreCase("flight"))
+                .map(r -> r.getSource() + "-" + r.getDestination())
+                .distinct()
+                .count();
+
+        map.put("flightRoutes", flightCount);
+
+        map.put("totalBookings", 0);
+        map.put("todayBookings", 0);
 
         return map;
     }

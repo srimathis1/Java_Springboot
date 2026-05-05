@@ -1,4 +1,4 @@
-package com.srimathi.project1sb;
+package com.srimathi.project1sb.controller;
 
 import com.srimathi.project1sb.model.Route;
 import com.srimathi.project1sb.repository.RouteRepository;
@@ -18,39 +18,38 @@ public class RouteController {
         this.repo = repo;
     }
 
-    // ✅ ADD OR UPDATE (NO DUPLICATES EVEN WITH CASE)
+    // ✅ ADD OR UPDATE (NO DUPLICATES)
     @PostMapping("/add")
-    public Route addRoute(@RequestBody Route route) {
+    public Route addOrUpdate(@RequestBody Route route) {
 
-        // 🔥 normalize input (IMPORTANT)
-        String source = route.getSource().toLowerCase().trim();
-        String destination = route.getDestination().toLowerCase().trim();
-        String type = route.getTransportType().toLowerCase().trim();
-
-        Optional<Route> existing = repo.findBySourceAndDestinationAndTransportType(
-                source, destination, type
-        );
+        Optional<Route> existing = repo
+                .findBySourceIgnoreCaseAndDestinationIgnoreCaseAndTransportTypeIgnoreCase(
+                        route.getSource(),
+                        route.getDestination(),
+                        route.getTransportType()
+                );
 
         if (existing.isPresent()) {
             Route r = existing.get();
+
+            // UPDATE existing
             r.setPrice(route.getPrice());
-            r.setAvailableSeats(route.getAvailableSeats());
+            r.setAvailableSeats(r.getAvailableSeats() + route.getAvailableSeats());
+
             return repo.save(r);
         }
-
-        route.setSource(source);
-        route.setDestination(destination);
-        route.setTransportType(type);
 
         return repo.save(route);
     }
 
+    // GET ALL
     @GetMapping("/all")
-    public List<Route> getAllRoutes() {
+    public List<Route> getAll() {
         return repo.findAll();
     }
 
-    @DeleteMapping("/delete/{id}")
+    // DELETE
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         repo.deleteById(id);
     }
