@@ -3,27 +3,11 @@ package com.srimathi.project1sb.model;
 import jakarta.persistence.*;
 
 @Entity
-public class Booking {
+public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
-
-    // =========================
-    // USER DETAILS
-    // =========================
-
-    private String username;
-
-    private String phone;
-
-    @Column(length = 1000)
-    private String address;
-
-    // =========================
-    // TRIP DETAILS
-    // =========================
 
     private String source;
 
@@ -33,22 +17,14 @@ public class Booking {
 
     private String departureTime;
 
-    private String returnTime;
-
     private String departureDate;
-
-    private String returnDate;
 
     private double price;
 
-    // =========================
-    // BOOKING STATUS
-    // =========================
-
-    private String status;
+    private boolean booked;
 
     // =========================
-    // GETTERS & SETTERS
+    // GETTERS AND SETTERS
     // =========================
 
     public Long getId() {
@@ -57,30 +33,6 @@ public class Booking {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getSource() {
@@ -115,28 +67,12 @@ public class Booking {
         this.departureTime = departureTime;
     }
 
-    public String getReturnTime() {
-        return returnTime;
-    }
-
-    public void setReturnTime(String returnTime) {
-        this.returnTime = returnTime;
-    }
-
     public String getDepartureDate() {
         return departureDate;
     }
 
     public void setDepartureDate(String departureDate) {
         this.departureDate = departureDate;
-    }
-
-    public String getReturnDate() {
-        return returnDate;
-    }
-
-    public void setReturnDate(String returnDate) {
-        this.returnDate = returnDate;
     }
 
     public double getPrice() {
@@ -147,11 +83,11 @@ public class Booking {
         this.price = price;
     }
 
-    public String getStatus() {
-        return status;
+    public boolean isBooked() {
+        return booked;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setBooked(boolean booked) {
+        this.booked = booked;
     }
 }

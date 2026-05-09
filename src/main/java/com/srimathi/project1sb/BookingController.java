@@ -2,21 +2,83 @@ package com.srimathi.project1sb;
 
 import com.srimathi.project1sb.model.Booking;
 import com.srimathi.project1sb.service.BookingService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/booking")
+
+@RequestMapping("/bookings")
+
+@CrossOrigin(origins = "*")
+
 public class BookingController {
 
-    private final BookingService service;
+    @Autowired
+    private BookingService bookingService;
 
-    public BookingController(BookingService service) {
-        this.service = service;
+    // =========================
+    // BOOK VEHICLE
+    // =========================
+
+    @PostMapping("/book")
+
+    public Booking bookVehicle(
+
+            @RequestParam Long vehicleId,
+
+            @RequestParam String username
+
+    ) {
+
+        return bookingService.bookVehicle(
+                vehicleId,
+                username
+        );
     }
 
-    @PostMapping("/create")
-    public Booking create(@RequestBody Booking booking) {
-        return service.createBooking(booking);
+    // =========================
+    // GET ALL BOOKINGS
+    // =========================
+
+    @GetMapping
+
+    public List<Booking> getAllBookings() {
+
+        return bookingService
+                .getAllBookings();
+    }
+
+    // =========================
+    // GET USER BOOKINGS
+    // =========================
+
+    @GetMapping("/user/{username}")
+
+    public List<Booking> getUserBookings(
+
+            @PathVariable String username
+
+    ) {
+
+        return bookingService
+                .getUserBookings(username);
+    }
+
+    // =========================
+    // CANCEL BOOKING
+    // =========================
+
+    @DeleteMapping("/cancel/{id}")
+
+    public void cancelBooking(
+
+            @PathVariable Long id
+
+    ) {
+
+        bookingService.cancelBooking(id);
     }
 }

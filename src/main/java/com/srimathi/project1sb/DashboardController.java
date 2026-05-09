@@ -1,54 +1,102 @@
 package com.srimathi.project1sb.controller;
 
-import com.srimathi.project1sb.model.Route;
-import com.srimathi.project1sb.repository.RouteRepository;
+import com.srimathi.project1sb.model.Booking;
+import com.srimathi.project1sb.model.Vehicle;
+import com.srimathi.project1sb.repository.BookingRepository;
 import com.srimathi.project1sb.repository.UserRepository;
+import com.srimathi.project1sb.repository.VehicleRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/dashboard")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class DashboardController {
 
-    private final RouteRepository routeRepo;
-    private final UserRepository userRepo;
+    @Autowired
+    private UserRepository userRepository;
 
-    public DashboardController(RouteRepository routeRepo, UserRepository userRepo) {
-        this.routeRepo = routeRepo;
-        this.userRepo = userRepo;
-    }
+    @Autowired
+    private VehicleRepository vehicleRepository;
 
-    @GetMapping("/admin")
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    // =====================================
+    // DASHBOARD STATS
+    // =====================================
+
+    @GetMapping("/stats")
     public Map<String, Object> getStats() {
 
-        List<Route> routes = routeRepo.findAll();
+        Map<String, Object> stats = new HashMap<>();
 
-        long totalRoutes = routes.size();
-        long users = userRepo.count();
+        // =====================================
+        // TOTAL USERS
+        // =====================================
 
-        long trainRoutes = routes.stream()
-                .filter(r -> r.getTransportType() != null &&
-                        r.getTransportType().equalsIgnoreCase("train"))
+        long totalUsers = userRepository.count();
+
+        // =====================================
+        // TOTAL VEHICLES
+        // =====================================
+
+        long totalVehicles = vehicleRepository.count();
+
+        // =====================================
+        // TOTAL BOOKINGS
+        // =====================================
+
+        long totalBookings = bookingRepository.count();
+
+        // =====================================
+        // REVENUE
+        // =====================================
+
+        double revenue = bookingRepository
+                .findAll()
+                .stream()
+                .mapToDouble((Booking b) -> b.getPrice())
+                .sum();
+
+        // =====================================
+        // ACTIVE TRIPS
+        // =====================================
+
+        long activeTrips = vehicleRepository
+                .findAll()
+                .stream()
+                .filter((Vehicle v) -> !v.isBooked())
                 .count();
 
-        long flightRoutes = routes.stream()
-                .filter(r -> r.getTransportType() != null &&
-                        r.getTransportType().equalsIgnoreCase("flight"))
+        // =====================================
+        // COMPLETED BOOKINGS
+        // =====================================
+
+        long completedTrips = bookingRepository
+                .findAll()
+                .stream()
+                .filter((Booking b) ->
+                        b.getStatus() != null &&
+                                b.getStatus().equalsIgnoreCase("CONFIRMED")
+                )
                 .count();
 
-        Map<String, Object> map = new HashMap<>();
+        // =====================================
+        // STORE VALUES
+        // =====================================
 
-        map.put("users", users);
-        map.put("routes", totalRoutes);
-        map.put("totalBookings", 0);
-        map.put("todayBookings", 0);
-        map.put("trainRoutes", trainRoutes);
-        map.put("flightRoutes", flightRoutes);
+        stats.put("users", totalUsers);
+        stats.put("vehicles", totalVehicles);
+        stats.put("bookings", totalBookings);
+        stats.put("revenue", revenue);
+        stats.put("activeTrips", activeTrips);
+        stats.put("completedTrips", completedTrips);
 
-        return map;
+        return stats;
     }
 }

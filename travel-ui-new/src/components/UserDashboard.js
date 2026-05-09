@@ -1,63 +1,22 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import UserSearch from "./UserSearch";
+import React from "react";
+import UserSidebar from "./UserSidebar";
+import UserRoutes from "./UserRoutes";
+import "./User.css";
 
-function UserDashboard() {
-
-    const navigate = useNavigate();
-
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    useEffect(() => {
-        if (!user || user.role !== "USER") {
-            navigate("/");
-        }
-    }, [user, navigate]);
-
-    const logout = () => {
-        localStorage.removeItem("user");
-        window.location.href = "/";
-    };
-
+function UserDashboard({ user, setUser }) {
     return (
-        <div style={{ display: "flex" }}>
+        <div className="user-layout">
 
-            {/* SIDEBAR */}
-            <div style={{
-                width: "220px",
-                background: "#1e1e2f",
-                color: "white",
-                height: "100vh",
-                padding: "20px"
-            }}>
-                <h2>👤 User</h2>
+            <UserSidebar user={user} setUser={setUser} />
 
-                <p style={{ marginTop: "20px" }}>
-                    Welcome, {user?.username}
-                </p>
+            <div className="user-main">
+                <div className="user-header">
+                    <h1>🌍 Welcome, {user?.username}</h1>
+                    <p>Smart AI Travel Booking Platform</p>
+                </div>
 
-                <button
-                    onClick={logout}
-                    style={{
-                        marginTop: "30px",
-                        background: "red",
-                        color: "white",
-                        border: "none",
-                        padding: "10px",
-                        width: "100%",
-                        borderRadius: "6px",
-                        cursor: "pointer"
-                    }}
-                >
-                    Logout
-                </button>
-            </div>
+                <UserRoutes user={user} />
 
-            {/* MAIN CONTENT */}
-            <div style={{ flex: 1, padding: "30px" }}>
-                <h2>🔍 Search Routes</h2>
-
-                <UserSearch />
             </div>
 
         </div>

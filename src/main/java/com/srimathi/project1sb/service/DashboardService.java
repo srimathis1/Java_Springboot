@@ -1,63 +1,104 @@
 package com.srimathi.project1sb.service;
 
-import com.srimathi.project1sb.model.Route;
-import com.srimathi.project1sb.repository.RouteRepository;
+import com.srimathi.project1sb.repository.BookingRepository;
 import com.srimathi.project1sb.repository.UserRepository;
+import com.srimathi.project1sb.repository.VehicleRepository;
+
+import com.srimathi.project1sb.model.Booking;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class DashboardService {
 
-    private final RouteRepository routeRepo;
-    private final UserRepository userRepo;
+    @Autowired
+    private UserRepository userRepository;
 
-    public DashboardService(RouteRepository routeRepo, UserRepository userRepo) {
-        this.routeRepo = routeRepo;
-        this.userRepo = userRepo;
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    // =========================
+    // TOTAL USERS
+    // =========================
+
+    public long getTotalUsers() {
+
+        return userRepository.count();
     }
 
-    public Map<String, Object> getDashboard() {
+    // =========================
+    // TOTAL BOOKINGS
+    // =========================
 
-        List<Route> routes = routeRepo.findAll();
+    public long getTotalBookings() {
 
-        Map<String, Object> map = new HashMap<>();
+        return bookingRepository.count();
+    }
 
-        // ✅ USERS
-        map.put("users", userRepo.count());
+    // =========================
+    // TOTAL VEHICLES
+    // =========================
 
-        // ✅ UNIQUE ROUTES
-        long uniqueRoutes = routes.stream()
-                .map(r -> r.getSource() + "-" + r.getDestination() + "-" + r.getTransportType())
-                .distinct()
+    public long getTotalVehicles() {
+
+        return vehicleRepository.count();
+    }
+
+    // =========================
+    // TOTAL REVENUE
+    // =========================
+
+    public double getRevenue() {
+
+        List<Booking> bookings = bookingRepository.findAll();
+
+        double total = 0;
+
+        for (Booking booking : bookings) {
+
+            total += booking.getPrice();
+        }
+
+        return total;
+    }
+
+    // =========================
+    // COMPLETED TRIPS
+    // =========================
+
+    public long getCompletedTrips() {
+
+        return bookingRepository
+                .findAll()
+                .stream()
+                .filter(
+                        b -> "COMPLETED".equalsIgnoreCase(
+                                b.getStatus()
+                        )
+                )
                 .count();
+    }
 
-        map.put("routes", uniqueRoutes);
+    // =========================
+    // ACTIVE BOOKINGS
+    // =========================
 
-        // ✅ TRAIN ROUTES
-        long trainCount = routes.stream()
-                .filter(r -> r.getTransportType().equalsIgnoreCase("train"))
-                .map(r -> r.getSource() + "-" + r.getDestination())
-                .distinct()
+    public long getActiveTrips() {
+
+        return bookingRepository
+                .findAll()
+                .stream()
+                .filter(
+                        b -> "BOOKED".equalsIgnoreCase(
+                                b.getStatus()
+                        )
+                )
                 .count();
-
-        map.put("trainRoutes", trainCount);
-
-        // ✅ FLIGHT ROUTES
-        long flightCount = routes.stream()
-                .filter(r -> r.getTransportType().equalsIgnoreCase("flight"))
-                .map(r -> r.getSource() + "-" + r.getDestination())
-                .distinct()
-                .count();
-
-        map.put("flightRoutes", flightCount);
-
-        map.put("totalBookings", 0);
-        map.put("todayBookings", 0);
-
-        return map;
     }
 }

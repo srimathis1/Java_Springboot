@@ -1,39 +1,147 @@
-package com.srimathi.project1sb.controller;
+package com.srimathi.project1sb;
 
 import com.srimathi.project1sb.model.User;
 import com.srimathi.project1sb.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
+
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3000")
+
+@CrossOrigin(origins = "*")
+
 public class AuthController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public AuthController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    // =========================
+    // REGISTER
+    // =========================
 
-    // ✅ REGISTER
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userRepository.save(user);
+
+    public String register(
+
+            @RequestBody User user
+    ) {
+
+        if (
+
+                userRepository
+                        .findByUsername(
+                                user.getUsername()
+                        )
+                        .isPresent()
+
+        ) {
+
+            return "Username Already Exists";
+        }
+
+        if (
+
+                userRepository
+                        .findByEmail(
+                                user.getEmail()
+                        )
+                        .isPresent()
+
+        ) {
+
+            return "Email Already Exists";
+        }
+
+        userRepository.save(user);
+
+        return "Registration Successful";
     }
 
-    // ✅ LOGIN
+    // =========================
+    // LOGIN
+    // =========================
+
     @PostMapping("/login")
-    public User login(@RequestBody User user) {
-        return userRepository.findByUsername(user.getUsername())
-                .filter(u -> u.getPassword().equals(user.getPassword()))
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+    public User login(
+
+            @RequestBody User loginUser
+    ) {
+
+        return userRepository
+
+                .findByUsername(
+                        loginUser.getUsername()
+                )
+
+                .filter(
+
+                        user -> user
+                                .getPassword()
+                                .equals(
+                                        loginUser.getPassword()
+                                )
+                )
+
+                .orElse(null);
     }
 
-    // ✅ GET USERS (optional)
-    @GetMapping("/all")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    // =========================
+    // GET USER PROFILE
+    // =========================
+
+    @GetMapping("/profile/{username}")
+
+    public User getProfile(
+
+            @PathVariable String username
+    ) {
+
+        return userRepository
+
+                .findByUsername(username)
+
+                .orElse(null);
+    }
+
+    // =========================
+    // UPDATE USER PROFILE
+    // =========================
+
+    @PutMapping("/profile/{id}")
+
+    public User updateProfile(
+
+            @PathVariable Long id,
+
+            @RequestBody User updatedUser
+    ) {
+
+        User user = userRepository
+
+                .findById(id)
+
+                .orElseThrow();
+
+        user.setUsername(
+                updatedUser.getUsername()
+        );
+
+        user.setEmail(
+                updatedUser.getEmail()
+        );
+
+        user.setPhone(
+                updatedUser.getPhone()
+        );
+
+        user.setAddress(
+                updatedUser.getAddress()
+        );
+
+        return userRepository.save(user);
     }
 }
