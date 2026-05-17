@@ -4,15 +4,13 @@ import com.srimathi.project1sb.model.User;
 import com.srimathi.project1sb.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-
 @RequestMapping("/auth")
-
 @CrossOrigin(origins = "*")
-
 public class AuthController {
 
     @Autowired
@@ -23,33 +21,27 @@ public class AuthController {
     // =========================
 
     @PostMapping("/register")
-
     public String register(
-
             @RequestBody User user
     ) {
 
         if (
-
                 userRepository
                         .findByUsername(
                                 user.getUsername()
                         )
                         .isPresent()
-
         ) {
 
             return "Username Already Exists";
         }
 
         if (
-
                 userRepository
                         .findByEmail(
                                 user.getEmail()
                         )
                         .isPresent()
-
         ) {
 
             return "Email Already Exists";
@@ -65,9 +57,7 @@ public class AuthController {
     // =========================
 
     @PostMapping("/login")
-
     public User login(
-
             @RequestBody User loginUser
     ) {
 
@@ -90,29 +80,24 @@ public class AuthController {
     }
 
     // =========================
-    // GET USER PROFILE
+    // GET PROFILE
     // =========================
 
     @GetMapping("/profile/{username}")
-
     public User getProfile(
-
             @PathVariable String username
     ) {
 
         return userRepository
-
                 .findByUsername(username)
-
                 .orElse(null);
     }
 
     // =========================
-    // UPDATE USER PROFILE
+    // UPDATE PROFILE
     // =========================
 
     @PutMapping("/profile/{id}")
-
     public User updateProfile(
 
             @PathVariable Long id,
@@ -121,9 +106,7 @@ public class AuthController {
     ) {
 
         User user = userRepository
-
                 .findById(id)
-
                 .orElseThrow();
 
         user.setUsername(
@@ -143,5 +126,15 @@ public class AuthController {
         );
 
         return userRepository.save(user);
+    }
+
+    // =========================
+    // GET ALL USERS
+    // =========================
+
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+
+        return userRepository.findAll();
     }
 }

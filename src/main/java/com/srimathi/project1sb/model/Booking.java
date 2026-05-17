@@ -6,9 +6,17 @@ import jakarta.persistence.*;
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-
+    @GeneratedValue(strategy =
+            GenerationType.IDENTITY)
     private Long id;
+
+    // =========================
+    // RELATIONS
+    // =========================
+
+    private Long userId;
+
+    private Long vehicleId;
 
     // =========================
     // USER DETAILS
@@ -18,14 +26,11 @@ public class Booking {
 
     private String phone;
 
-    @Column(length = 1000)
     private String address;
 
     // =========================
     // TRIP DETAILS
     // =========================
-
-    private String source;
 
     private String destination;
 
@@ -33,17 +38,13 @@ public class Booking {
 
     private String departureTime;
 
-    private String returnTime;
-
     private String departureDate;
 
     private String returnDate;
 
-    private double price;
+    private int familyMembers;
 
-    // =========================
-    // BOOKING STATUS
-    // =========================
+    private double price;
 
     private String status;
 
@@ -59,19 +60,45 @@ public class Booking {
         this.id = id;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(
+            Long userId
+    ) {
+        this.userId = userId;
+    }
+
+    public Long getVehicleId() {
+        return vehicleId;
+    }
+
+    public void setVehicleId(
+            Long vehicleId
+    ) {
+        this.vehicleId =
+                vehicleId;
+    }
+
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(
+            String username
+    ) {
+        this.username =
+                username;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(
+            String phone
+    ) {
         this.phone = phone;
     }
 
@@ -79,71 +106,86 @@ public class Booking {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
+    public void setAddress(
+            String address
+    ) {
+        this.address =
+                address;
     }
 
     public String getDestination() {
         return destination;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setDestination(
+            String destination
+    ) {
+        this.destination =
+                destination;
     }
 
     public String getVehicleType() {
         return vehicleType;
     }
 
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
+    public void setVehicleType(
+            String vehicleType
+    ) {
+        this.vehicleType =
+                vehicleType;
     }
 
     public String getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(String departureTime) {
-        this.departureTime = departureTime;
-    }
-
-    public String getReturnTime() {
-        return returnTime;
-    }
-
-    public void setReturnTime(String returnTime) {
-        this.returnTime = returnTime;
+    public void setDepartureTime(
+            String departureTime
+    ) {
+        this.departureTime =
+                departureTime;
     }
 
     public String getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(String departureDate) {
-        this.departureDate = departureDate;
+    public void setDepartureDate(
+            String departureDate
+    ) {
+        this.departureDate =
+                departureDate;
     }
 
     public String getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(String returnDate) {
-        this.returnDate = returnDate;
+    public void setReturnDate(
+            String returnDate
+    ) {
+        this.returnDate =
+                returnDate;
+    }
+
+    public int getFamilyMembers() {
+        return familyMembers;
+    }
+
+    public void setFamilyMembers(
+            int familyMembers
+    ) {
+        this.familyMembers =
+                familyMembers;
     }
 
     public double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(
+            double price
+    ) {
         this.price = price;
     }
 
@@ -151,7 +193,9 @@ public class Booking {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(
+            String status
+    ) {
         this.status = status;
     }
 }

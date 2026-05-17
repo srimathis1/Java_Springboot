@@ -17,38 +17,65 @@ import java.util.List;
 public class BookingService {
 
     @Autowired
-    private BookingRepository bookingRepository;
+    private BookingRepository
+            bookingRepository;
 
     @Autowired
-    private VehicleRepository vehicleRepository;
+    private VehicleRepository
+            vehicleRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository
+            userRepository;
 
     // =========================
     // BOOK VEHICLE
     // =========================
 
     public Booking bookVehicle(
+
             Long vehicleId,
-            String username
+
+            Long userId,
+
+            String returnDate,
+
+            int familyMembers
+
     ) {
 
-        Vehicle vehicle = vehicleRepository
-                .findById(vehicleId)
-                .orElse(null);
+        Vehicle vehicle =
+                vehicleRepository
+                        .findById(
+                                vehicleId
+                        )
+                        .orElse(null);
 
-        User user = userRepository
-                .findByUsername(username)
-                .orElse(null);
+        User user =
+                userRepository
+                        .findById(
+                                userId
+                        )
+                        .orElse(null);
 
-        if (vehicle == null || user == null) {
+        if (
+                vehicle == null
+                        || user == null
+        ) {
+
             return null;
         }
 
-        Booking booking = new Booking();
+        Booking booking =
+                new Booking();
 
-        // USER DETAILS
+        booking.setUserId(
+                user.getId()
+        );
+
+        booking.setVehicleId(
+                vehicle.getId()
+        );
 
         booking.setUsername(
                 user.getUsername()
@@ -61,8 +88,6 @@ public class BookingService {
         booking.setAddress(
                 user.getAddress()
         );
-
-        // TRIP DETAILS
 
         booking.setDestination(
                 vehicle.getDestination()
@@ -80,44 +105,50 @@ public class BookingService {
                 vehicle.getDepartureDate()
         );
 
+        booking.setReturnDate(
+                returnDate
+        );
+
+        booking.setFamilyMembers(
+                familyMembers
+        );
+
         booking.setPrice(
                 vehicle.getPrice()
         );
 
-        booking.setStatus("BOOKED");
-
-        return bookingRepository.save(
-                booking
+        booking.setStatus(
+                "CONFIRMED"
         );
-    }
 
-    // =========================
-    // GET ALL BOOKINGS
-    // =========================
+        vehicle.setBooked(true);
 
-    public List<Booking> getAllBookings() {
+        vehicleRepository
+                .save(vehicle);
 
-        return bookingRepository.findAll();
+        return bookingRepository
+                .save(booking);
     }
 
     // =========================
     // USER BOOKINGS
     // =========================
 
-    public List<Booking> getUserBookings(
-            String username
+    public List<Booking>
+    getUserBookings(
+            Long userId
     ) {
 
         return bookingRepository
-                .findByUsername(username);
+                .findByUserId(
+                        userId
+                );
     }
 
-    // =========================
-    // CANCEL BOOKING
-    // =========================
+    public List<Booking>
+    getAllBookings() {
 
-    public void cancelBooking(Long id) {
-
-        bookingRepository.deleteById(id);
+        return bookingRepository
+                .findAll();
     }
 }

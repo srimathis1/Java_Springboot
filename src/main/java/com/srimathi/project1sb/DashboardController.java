@@ -1,10 +1,6 @@
-package com.srimathi.project1sb.controller;
+package com.srimathi.project1sb;
 
-import com.srimathi.project1sb.model.Booking;
-import com.srimathi.project1sb.model.Vehicle;
-import com.srimathi.project1sb.repository.BookingRepository;
-import com.srimathi.project1sb.repository.UserRepository;
-import com.srimathi.project1sb.repository.VehicleRepository;
+import com.srimathi.project1sb.service.DashboardService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,84 +14,58 @@ import java.util.Map;
 public class DashboardController {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private VehicleRepository vehicleRepository;
-
-    @Autowired
-    private BookingRepository bookingRepository;
-
-    // =====================================
-    // DASHBOARD STATS
-    // =====================================
+    private DashboardService
+            dashboardService;
 
     @GetMapping("/stats")
-    public Map<String, Object> getStats() {
+    public Map<String, Object>
+    getStats() {
 
-        Map<String, Object> stats = new HashMap<>();
+        Map<String, Object>
+                stats =
+                new HashMap<>();
 
-        // =====================================
-        // TOTAL USERS
-        // =====================================
+        stats.put(
+                "users",
+                dashboardService
+                        .getTotalUsers()
+        );
 
-        long totalUsers = userRepository.count();
+        stats.put(
+                "vehicles",
+                dashboardService
+                        .getTotalVehicles()
+        );
 
-        // =====================================
-        // TOTAL VEHICLES
-        // =====================================
+        stats.put(
+                "bookings",
+                dashboardService
+                        .getTotalBookings()
+        );
 
-        long totalVehicles = vehicleRepository.count();
+        stats.put(
+                "revenue",
+                dashboardService
+                        .getRevenue()
+        );
 
-        // =====================================
-        // TOTAL BOOKINGS
-        // =====================================
+        stats.put(
+                "activeTrips",
+                dashboardService
+                        .getActiveTrips()
+        );
 
-        long totalBookings = bookingRepository.count();
+        stats.put(
+                "completedTrips",
+                dashboardService
+                        .getCompletedTrips()
+        );
 
-        // =====================================
-        // REVENUE
-        // =====================================
-
-        double revenue = bookingRepository
-                .findAll()
-                .stream()
-                .mapToDouble((Booking b) -> b.getPrice())
-                .sum();
-
-        // =====================================
-        // ACTIVE TRIPS
-        // =====================================
-
-        long activeTrips = vehicleRepository
-                .findAll()
-                .stream()
-                .filter((Vehicle v) -> !v.isBooked())
-                .count();
-
-        // =====================================
-        // COMPLETED BOOKINGS
-        // =====================================
-
-        long completedTrips = bookingRepository
-                .findAll()
-                .stream()
-                .filter((Booking b) ->
-                        b.getStatus() != null &&
-                                b.getStatus().equalsIgnoreCase("CONFIRMED")
-                )
-                .count();
-
-        // =====================================
-        // STORE VALUES
-        // =====================================
-
-        stats.put("users", totalUsers);
-        stats.put("vehicles", totalVehicles);
-        stats.put("bookings", totalBookings);
-        stats.put("revenue", revenue);
-        stats.put("activeTrips", activeTrips);
-        stats.put("completedTrips", completedTrips);
+        stats.put(
+                "vehicleBreakdown",
+                dashboardService
+                        .getVehicleBreakdown()
+        );
 
         return stats;
     }

@@ -9,76 +9,59 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-
 @RequestMapping("/bookings")
-
 @CrossOrigin(origins = "*")
-
 public class BookingController {
 
     @Autowired
-    private BookingService bookingService;
-
-    // =========================
-    // BOOK VEHICLE
-    // =========================
+    private BookingService
+            bookingService;
 
     @PostMapping("/book")
-
     public Booking bookVehicle(
 
-            @RequestParam Long vehicleId,
+            @RequestParam
+            Long vehicleId,
 
-            @RequestParam String username
+            @RequestParam
+            Long userId,
+
+            @RequestParam
+            String returnDate,
+
+            @RequestParam
+            int familyMembers
 
     ) {
 
-        return bookingService.bookVehicle(
-                vehicleId,
-                username
-        );
+        return bookingService
+                .bookVehicle(
+                        vehicleId,
+                        userId,
+                        returnDate,
+                        familyMembers
+                );
     }
 
-    // =========================
-    // GET ALL BOOKINGS
-    // =========================
+    @GetMapping("/user/{userId}")
+    public List<Booking>
+    getUserBookings(
+
+            @PathVariable
+            Long userId
+    ) {
+
+        return bookingService
+                .getUserBookings(
+                        userId
+                );
+    }
 
     @GetMapping
-
-    public List<Booking> getAllBookings() {
+    public List<Booking>
+    getAllBookings() {
 
         return bookingService
                 .getAllBookings();
-    }
-
-    // =========================
-    // GET USER BOOKINGS
-    // =========================
-
-    @GetMapping("/user/{username}")
-
-    public List<Booking> getUserBookings(
-
-            @PathVariable String username
-
-    ) {
-
-        return bookingService
-                .getUserBookings(username);
-    }
-
-    // =========================
-    // CANCEL BOOKING
-    // =========================
-
-    @DeleteMapping("/cancel/{id}")
-
-    public void cancelBooking(
-
-            @PathVariable Long id
-
-    ) {
-
-        bookingService.cancelBooking(id);
     }
 }
