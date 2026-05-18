@@ -7,19 +7,13 @@ import {
 
 import { useState } from "react";
 
-import "./App.css";
-
-/* LOGIN */
 import Login from "./components/Login";
 
-/* ADMIN */
 import AdminLayout from "./components/AdminLayout";
 import AdminDashboard from "./components/AdminDashboard";
 import AdminRoutes from "./components/AdminRoutes";
 import AdminBookings from "./components/AdminBookings";
-import Analytics from "./components/Analytics";
 
-/* USER */
 import UserDashboard from "./components/UserDashboard";
 import UserBookings from "./components/UserBookings";
 import Profile from "./components/Profile";
@@ -28,23 +22,33 @@ function App() {
 
     const [user, setUser] = useState(
         JSON.parse(
-            localStorage.getItem("user")
+            localStorage.getItem(
+                "user"
+            )
         )
     );
 
-    return (
+    const currentUser =
+        user ||
+        JSON.parse(
+            localStorage.getItem(
+                "user"
+            )
+        );
 
+    return (
         <BrowserRouter>
 
             <Routes>
 
-                {/* ================= LOGIN ================= */}
-
+                {/* LOGIN */}
                 <Route
                     path="/"
                     element={
                         <Login
-                            setUser={setUser}
+                            setUser={
+                                setUser
+                            }
                         />
                     }
                 />
@@ -54,33 +58,26 @@ function App() {
                 <Route
                     path="/admin"
                     element={
-                        user?.role === "ADMIN"
+                        currentUser?.role ===
+                        "ADMIN"
 
-                            ? (
+                            ?
 
-                                <AdminLayout
-                                    user={user}
-                                    setUser={setUser}
-                                />
+                            <AdminLayout />
 
-                            )
+                            :
 
-                            : (
-                                <Navigate to="/" />
-                            )
+                            <Navigate
+                                to="/"
+                            />
                     }
                 >
-
-                    {/* DASHBOARD */}
-
                     <Route
                         index
                         element={
                             <AdminDashboard />
                         }
                     />
-
-                    {/* TRIPS */}
 
                     <Route
                         path="routes"
@@ -89,100 +86,67 @@ function App() {
                         }
                     />
 
-                    {/* BOOKINGS */}
-
                     <Route
                         path="bookings"
                         element={
                             <AdminBookings />
                         }
                     />
-
-                    {/* ANALYTICS */}
-
-                    <Route
-                        path="analytics"
-                        element={
-                            <Analytics />
-                        }
-                    />
-
                 </Route>
 
                 {/* ================= USER ================= */}
 
-                {/* USER DASHBOARD */}
-
                 <Route
                     path="/user"
                     element={
-                        user?.role === "USER"
+                        currentUser?.role ===
+                        "USER"
 
-                            ? (
+                            ?
 
-                                <UserDashboard
-                                    user={user}
-                                    setUser={setUser}
-                                />
+                            <UserDashboard />
 
-                            )
+                            :
 
-                            : (
-                                <Navigate to="/" />
-                            )
+                            <Navigate
+                                to="/"
+                            />
                     }
                 />
 
-                {/* USER BOOKINGS */}
-
                 <Route
-                    path="/user/bookings"
+                    path="/profile"
                     element={
-                        user?.role === "USER"
+                        currentUser?.role ===
+                        "USER"
 
-                            ? (
+                            ?
 
-                                <UserBookings
-                                    user={user}
-                                    setUser={setUser}
-                                />
+                            <Profile />
 
-                            )
+                            :
 
-                            : (
-                                <Navigate to="/" />
-                            )
+                            <Navigate
+                                to="/"
+                            />
                     }
                 />
 
-                {/* USER PROFILE */}
-
                 <Route
-                    path="/user/profile"
+                    path="/my-bookings"
                     element={
-                        user?.role === "USER"
+                        currentUser?.role ===
+                        "USER"
 
-                            ? (
+                            ?
 
-                                <Profile
-                                    user={user}
-                                    setUser={setUser}
-                                />
+                            <UserBookings />
 
-                            )
+                            :
 
-                            : (
-                                <Navigate to="/" />
-                            )
-                    }
-                />
-
-                {/* ================= FALLBACK ================= */}
-
-                <Route
-                    path="*"
-                    element={
-                        <Navigate to="/" />
+                            <Navigate
+                                to="/"
+                            />
                     }
                 />
 

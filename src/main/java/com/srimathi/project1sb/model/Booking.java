@@ -6,8 +6,10 @@ import jakarta.persistence.*;
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy =
-            GenerationType.IDENTITY)
+    @GeneratedValue(
+            strategy =
+                    GenerationType.IDENTITY
+    )
     private Long id;
 
     // =========================
@@ -42,6 +44,9 @@ public class Booking {
 
     private String returnDate;
 
+    // ✅ NEW FIELD
+    private String bookingMonth;
+
     private int familyMembers;
 
     private double price;
@@ -56,7 +61,9 @@ public class Booking {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(
+            Long id
+    ) {
         this.id = id;
     }
 
@@ -67,7 +74,8 @@ public class Booking {
     public void setUserId(
             Long userId
     ) {
-        this.userId = userId;
+        this.userId =
+                userId;
     }
 
     public Long getVehicleId() {
@@ -99,7 +107,8 @@ public class Booking {
     public void setPhone(
             String phone
     ) {
-        this.phone = phone;
+        this.phone =
+                phone;
     }
 
     public String getAddress() {
@@ -168,6 +177,21 @@ public class Booking {
                 returnDate;
     }
 
+    // =========================
+    // BOOKING MONTH
+    // =========================
+
+    public String getBookingMonth() {
+        return bookingMonth;
+    }
+
+    public void setBookingMonth(
+            String bookingMonth
+    ) {
+        this.bookingMonth =
+                bookingMonth;
+    }
+
     public int getFamilyMembers() {
         return familyMembers;
     }
@@ -186,7 +210,8 @@ public class Booking {
     public void setPrice(
             double price
     ) {
-        this.price = price;
+        this.price =
+                price;
     }
 
     public String getStatus() {
@@ -196,6 +221,7 @@ public class Booking {
     public void setStatus(
             String status
     ) {
-        this.status = status;
+        this.status =
+                status;
     }
 }

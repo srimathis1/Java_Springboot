@@ -11,7 +11,10 @@ import com.srimathi.project1sb.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class BookingService {
@@ -69,6 +72,10 @@ public class BookingService {
         Booking booking =
                 new Booking();
 
+        // =========================
+        // USER DETAILS
+        // =========================
+
         booking.setUserId(
                 user.getId()
         );
@@ -88,6 +95,10 @@ public class BookingService {
         booking.setAddress(
                 user.getAddress()
         );
+
+        // =========================
+        // TRIP DETAILS
+        // =========================
 
         booking.setDestination(
                 vehicle.getDestination()
@@ -121,10 +132,36 @@ public class BookingService {
                 "CONFIRMED"
         );
 
-        vehicle.setBooked(true);
+        // =========================
+        // BOOKING MONTH
+        // =========================
+
+        String currentMonth =
+                LocalDate.now()
+                        .getMonth()
+                        .getDisplayName(
+                                TextStyle.SHORT,
+                                Locale.ENGLISH
+                        );
+
+        booking.setBookingMonth(
+                currentMonth
+        );
+
+        // =========================
+        // UPDATE VEHICLE STATUS
+        // =========================
+
+        vehicle.setBooked(
+                true
+        );
 
         vehicleRepository
                 .save(vehicle);
+
+        // =========================
+        // SAVE BOOKING
+        // =========================
 
         return bookingRepository
                 .save(booking);
@@ -144,6 +181,10 @@ public class BookingService {
                         userId
                 );
     }
+
+    // =========================
+    // ADMIN BOOKINGS
+    // =========================
 
     public List<Booking>
     getAllBookings() {

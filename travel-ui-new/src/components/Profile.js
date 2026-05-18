@@ -1,170 +1,95 @@
-import React, {
-    useEffect,
-    useState
-} from "react";
+import React, { useEffect, useState } from "react";
+import UserSidebar from "./UserSidebar";
 
-import UserSidebar
-    from "./UserSidebar";
+function Profile() {
 
-function Profile({
-                     user,
-                     setUser
-                 }) {
+    const storedUser = JSON.parse(
+        localStorage.getItem("user")
+    );
 
-    const [form,
-        setForm] =
-        useState({
-
-            username: "",
-            email: "",
-            phone: "",
-            address: ""
-        });
+    const [profile, setProfile] = useState({
+        username: "",
+        email: "",
+        phone: "",
+        address: ""
+    });
 
     useEffect(() => {
 
-        if (user) {
+        if (storedUser) {
 
-            setForm({
-
+            setProfile({
                 username:
-                    user.username || "",
+                    storedUser.username || "",
 
                 email:
-                    user.email || "",
+                    storedUser.email || "",
 
                 phone:
-                    user.phone || "",
+                    storedUser.phone || "",
 
                 address:
-                    user.address || ""
+                    storedUser.address || ""
             });
         }
 
-    }, [user]);
+    }, []);
 
-    const handleChange =
-        (e) => {
+    const handleChange = (e) => {
 
-            setForm({
+        const {
+            name,
+            value
+        } = e.target;
 
-                ...form,
+        setProfile({
+            ...profile,
+            [name]: value
+        });
+    };
 
-                [e.target.name]:
-                e.target.value
-            });
+    const updateProfile = () => {
+
+        const updatedUser = {
+            ...storedUser,
+            ...profile
         };
 
-    const updateProfile =
-        async () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify(updatedUser)
+        );
 
-            try {
-
-                const res =
-                    await fetch(
-
-                        `http://localhost:8080/auth/profile/${user.id}`,
-
-                        {
-
-                            method:
-                                "PUT",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify(
-                                    form
-                                )
-                        }
-                    );
-
-                if (
-                    res.ok
-                ) {
-
-                    const updatedUser = {
-
-                        ...user,
-                        ...form
-                    };
-
-                    localStorage.setItem(
-
-                        "user",
-
-                        JSON.stringify(
-                            updatedUser
-                        )
-                    );
-
-                    setUser(
-                        updatedUser
-                    );
-
-                    alert(
-                        "✅ Profile Updated"
-                    );
-
-                }
-
-            } catch {
-
-                alert(
-                    "❌ Server Error"
-                );
-            }
-        };
+        alert(
+            "✅ Profile Updated!"
+        );
+    };
 
     return (
 
         <div
             style={{
-                display:
-                    "flex",
-
-                background:
-                    "#ececf1",
-
-                minHeight:
-                    "100vh"
+                display: "flex",
+                background: "#ececf2",
+                minHeight: "100vh"
             }}
         >
 
-            <UserSidebar
-                user={user}
-                setUser={setUser}
-            />
+            <UserSidebar />
 
             <div
                 style={{
-                    flex: 1,
-
-                    marginLeft:
-                        "300px",
-
-                    padding:
-                        "35px",
-
-                    width:
-                        "calc(100% - 300px)"
+                    marginLeft: "300px",
+                    width: "100%",
+                    padding: "40px"
                 }}
             >
 
                 <h1
                     style={{
-                        color:
-                            "#1b1b78",
-
-                        fontSize:
-                            "45px",
-
-                        marginBottom:
-                            "35px"
+                        color: "#1e2088",
+                        fontSize: "55px",
+                        marginBottom: "35px"
                     }}
                 >
                     👤 My Profile
@@ -172,67 +97,68 @@ function Profile({
 
                 <div
                     style={{
-                        background:
-                            "white",
-
-                        maxWidth:
-                            "700px",
-
-                        padding:
-                            "40px",
-
-                        borderRadius:
-                            "24px",
-
+                        background: "white",
+                        borderRadius: "30px",
+                        padding: "40px",
+                        maxWidth: "1100px",
                         boxShadow:
                             "0 6px 18px rgba(0,0,0,0.1)"
                     }}
                 >
 
                     <input
+                        type="text"
                         name="username"
+                        value={profile.username}
+                        onChange={handleChange}
                         placeholder="Username"
-                        value={form.username}
-                        onChange={handleChange}
                         style={inputStyle}
                     />
 
                     <input
+                        type="email"
                         name="email"
-                        placeholder="Email"
-                        value={form.email}
+                        value={profile.email}
                         onChange={handleChange}
+                        placeholder="Email"
                         style={inputStyle}
                     />
 
                     <input
+                        type="text"
                         name="phone"
-                        placeholder="Phone"
-                        value={form.phone}
+                        value={profile.phone}
                         onChange={handleChange}
+                        placeholder="Phone"
                         style={inputStyle}
                     />
 
                     <textarea
                         name="address"
-                        placeholder="Address"
-                        value={form.address}
+                        value={profile.address}
                         onChange={handleChange}
+                        placeholder="Address"
                         style={{
                             ...inputStyle,
-                            height:
-                                "120px"
+                            minHeight: "180px",
+                            resize: "vertical"
                         }}
                     />
 
                     <button
-                        onClick={
-                            updateProfile
-                        }
-
-                        style={
-                            buttonStyle
-                        }
+                        onClick={updateProfile}
+                        style={{
+                            width: "100%",
+                            padding: "18px",
+                            border: "none",
+                            borderRadius: "16px",
+                            background: "#1e2088",
+                            color: "white",
+                            fontSize: "22px",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            marginTop: "10px"
+                        }}
                     >
                         Update Profile
                     </button>
@@ -246,57 +172,14 @@ function Profile({
 }
 
 const inputStyle = {
-
-    width:
-        "100%",
-
-    padding:
-        "16px",
-
-    marginBottom:
-        "20px",
-
-    borderRadius:
-        "14px",
-
-    border:
-        "1px solid #ddd",
-
-    fontSize:
-        "16px",
-
-    boxSizing:
-        "border-box"
-};
-
-const buttonStyle = {
-
-    width:
-        "100%",
-
-    padding:
-        "16px",
-
-    border:
-        "none",
-
-    borderRadius:
-        "14px",
-
-    background:
-        "#1b1b78",
-
-    color:
-        "white",
-
-    fontSize:
-        "18px",
-
-    fontWeight:
-        "600",
-
-    cursor:
-        "pointer"
+    width: "100%",
+    padding: "18px",
+    marginBottom: "25px",
+    borderRadius: "18px",
+    border: "1px solid #ddd",
+    fontSize: "20px",
+    outline: "none",
+    boxSizing: "border-box"
 };
 
 export default Profile;

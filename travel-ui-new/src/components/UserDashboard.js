@@ -6,10 +6,14 @@ import React, {
 import UserSidebar
     from "./UserSidebar";
 
-function UserDashboard({
-                           user,
-                           setUser
-                       }) {
+function UserDashboard() {
+
+    const storedUser =
+        JSON.parse(
+            localStorage.getItem(
+                "user"
+            )
+        );
 
     const [vehicles,
         setVehicles] =
@@ -23,20 +27,28 @@ function UserDashboard({
         setBookingDetails] =
         useState({});
 
-    // ======================
-    // LOAD VEHICLES
-    // ======================
+    const [analytics,
+        setAnalytics] =
+        useState({
+            totalTrips: 0,
+            totalBookings: 0,
+            totalFeedbacks: 0,
+            mostBookedPlace: "-",
+            topRatedPlace: "-"
+        });
+
+    // =====================
+    // LOAD DATA
+    // =====================
 
     useEffect(() => {
 
         fetch(
             "http://localhost:8080/vehicles"
         )
-
             .then((res) =>
                 res.json()
             )
-
             .then((data) => {
 
                 const activeTrips =
@@ -48,16 +60,30 @@ function UserDashboard({
                 setVehicles(
                     activeTrips
                 );
-            })
+            });
 
-            .catch((err) =>
-                console.log(err));
+        fetch(
+            "http://localhost:8080/analytics/dashboard"
+        )
+            .then((res) =>
+                res.json()
+            )
+            .then((data) =>
+                setAnalytics(
+                    data
+                )
+            )
+            .catch(() =>
+                console.log(
+                    "Analytics failed"
+                )
+            );
 
     }, []);
 
-    // ======================
-    // INPUT CHANGE
-    // ======================
+    // =====================
+    // HANDLE INPUT
+    // =====================
 
     const handleInputChange =
         (
@@ -83,9 +109,9 @@ function UserDashboard({
             );
         };
 
-    // ======================
-    // BOOKING
-    // ======================
+    // =====================
+    // BOOKING FIXED
+    // =====================
 
     const handleBooking =
         async (
@@ -114,7 +140,7 @@ function UserDashboard({
                 const response =
                     await fetch(
 
-                        `http://localhost:8080/bookings/book?vehicleId=${vehicleId}&userId=${user.id}&returnDate=${details.returnDate}&familyMembers=${details.familyMembers || 1}`,
+                        `http://localhost:8080/bookings/book?vehicleId=${vehicleId}&userId=${storedUser.id}&returnDate=${details.returnDate}&familyMembers=${details.familyMembers || 1}`,
 
                         {
                             method:
@@ -147,9 +173,9 @@ function UserDashboard({
             }
         };
 
-    // ======================
+    // =====================
     // SEARCH
-    // ======================
+    // =====================
 
     const filteredVehicles =
         vehicles.filter(
@@ -186,77 +212,93 @@ function UserDashboard({
             }}
         >
 
-            <UserSidebar
-                user={user}
-                setUser={setUser}
-            />
-
-            {/* MAIN CONTENT */}
+            <UserSidebar />
 
             <div
                 style={{
                     flex: 1,
-
                     marginLeft:
                         "300px",
-
                     padding:
                         "35px",
-
-                    width:
-                        "calc(100% - 300px)",
-
                     boxSizing:
                         "border-box"
                 }}
             >
 
-                {/* HEADER */}
+                <h1
+                    style={{
+                        color:
+                            "#1b1b78",
+                        fontSize:
+                            "46px"
+                    }}
+                >
+                    Welcome {
+                    storedUser?.username
+                } 👋
+                </h1>
+
+                <p
+                    style={{
+                        color:
+                            "#666",
+                        marginBottom:
+                            "35px"
+                    }}
+                >
+                    Explore the best destinations
+                </p>
 
                 <div
                     style={{
+                        display:
+                            "grid",
+
+                        gridTemplateColumns:
+                            "repeat(auto-fit,minmax(240px,1fr))",
+
+                        gap:
+                            "22px",
+
                         marginBottom:
-                            "30px"
+                            "40px"
                     }}
                 >
 
-                    <h1
-                        style={{
-                            color:
-                                "#1b1b78",
-
-                            fontSize:
-                                "48px",
-
-                            marginBottom:
-                                "10px",
-
-                            lineHeight:
-                                "1.2"
-                        }}
-                    >
-                        Welcome{" "}
-                        {
-                            user?.username
+                    <AnalyticsCard
+                        title="Trips"
+                        value={
+                            analytics.totalTrips
                         }
-                        👋
-                    </h1>
+                        icon="🚘"
+                    />
 
-                    <p
-                        style={{
-                            color:
-                                "#666",
+                    <AnalyticsCard
+                        title="Bookings"
+                        value={
+                            analytics.totalBookings
+                        }
+                        icon="📖"
+                    />
 
-                            fontSize:
-                                "18px"
-                        }}
-                    >
-                        Find your perfect travel destination
-                    </p>
+                    <AnalyticsCard
+                        title="Feedbacks"
+                        value={
+                            analytics.totalFeedbacks
+                        }
+                        icon="⭐"
+                    />
+
+                    <AnalyticsCard
+                        title="Trending Place"
+                        value={
+                            analytics.mostBookedPlace
+                        }
+                        icon="🔥"
+                    />
 
                 </div>
-
-                {/* SEARCH */}
 
                 <input
                     type="text"
@@ -269,39 +311,14 @@ function UserDashboard({
 
                     onChange={(e) =>
                         setSearch(
-                            e.target
-                                .value
+                            e.target.value
                         )
                     }
 
-                    style={{
-                        width:
-                            "100%",
-
-                        padding:
-                            "18px",
-
-                        borderRadius:
-                            "16px",
-
-                        border:
-                            "1px solid #ddd",
-
-                        fontSize:
-                            "17px",
-
-                        marginBottom:
-                            "35px",
-
-                        outline:
-                            "none",
-
-                        boxSizing:
-                            "border-box"
-                    }}
+                    style={
+                        searchStyle
+                    }
                 />
-
-                {/* VEHICLE CARDS */}
 
                 <div
                     style={{
@@ -309,7 +326,7 @@ function UserDashboard({
                             "grid",
 
                         gridTemplateColumns:
-                            "repeat(auto-fit, minmax(380px, 1fr))",
+                            "repeat(auto-fit,minmax(380px,1fr))",
 
                         gap:
                             "30px"
@@ -327,30 +344,12 @@ function UserDashboard({
                                     vehicle.id
                                 }
 
-                                style={{
-                                    background:
-                                        "white",
-
-                                    borderRadius:
-                                        "24px",
-
-                                    padding:
-                                        "28px",
-
-                                    boxShadow:
-                                        "0 6px 18px rgba(0,0,0,0.1)"
-                                }}
+                                style={
+                                    cardStyle
+                                }
                             >
 
-                                <h2
-                                    style={{
-                                        color:
-                                            "#1b1b78",
-
-                                        marginBottom:
-                                            "22px"
-                                    }}
-                                >
+                                <h2>
                                     {
                                         vehicle.source
                                     }
@@ -363,35 +362,27 @@ function UserDashboard({
                                 </h2>
 
                                 <p>
-                                    🚘 Vehicle:
-                                    {" "}
-                                    {
-                                        vehicle.vehicleType
-                                    }
+                                    🚘 {
+                                    vehicle.vehicleType
+                                }
                                 </p>
 
                                 <p>
-                                    📅 Date:
-                                    {" "}
-                                    {
-                                        vehicle.departureDate
-                                    }
+                                    📅 {
+                                    vehicle.departureDate
+                                }
                                 </p>
 
                                 <p>
-                                    🕒 Time:
-                                    {" "}
-                                    {
-                                        vehicle.departureTime
-                                    }
+                                    🕒 {
+                                    vehicle.departureTime
+                                }
                                 </p>
 
                                 <p>
-                                    💰 Price:
-                                    ₹
-                                    {
-                                        vehicle.price
-                                    }
+                                    💰 ₹{
+                                    vehicle.price
+                                }
                                 </p>
 
                                 <input
@@ -405,7 +396,9 @@ function UserDashboard({
                                         )
                                     }
 
-                                    style={inputStyle}
+                                    style={
+                                        inputStyle
+                                    }
                                 />
 
                                 <input
@@ -423,7 +416,9 @@ function UserDashboard({
                                         )
                                     }
 
-                                    style={inputStyle}
+                                    style={
+                                        inputStyle
+                                    }
                                 />
 
                                 <button
@@ -433,37 +428,9 @@ function UserDashboard({
                                         )
                                     }
 
-                                    style={{
-                                        width:
-                                            "100%",
-
-                                        padding:
-                                            "16px",
-
-                                        background:
-                                            "#1b1b78",
-
-                                        border:
-                                            "none",
-
-                                        color:
-                                            "white",
-
-                                        borderRadius:
-                                            "14px",
-
-                                        fontSize:
-                                            "17px",
-
-                                        fontWeight:
-                                            "600",
-
-                                        marginTop:
-                                            "18px",
-
-                                        cursor:
-                                            "pointer"
-                                    }}
+                                    style={
+                                        bookBtn
+                                    }
                                 >
                                     Book Now
                                 </button>
@@ -480,28 +447,63 @@ function UserDashboard({
     );
 }
 
+function AnalyticsCard({
+                           title,
+                           value,
+                           icon
+                       }) {
+
+    return (
+        <div
+            style={{
+                background:
+                    "white",
+
+                borderRadius:
+                    "22px",
+
+                padding:
+                    "25px"
+            }}
+        >
+            <h3>
+                {icon} {title}
+            </h3>
+
+            <h1>
+                {value}
+            </h1>
+        </div>
+    );
+}
+
+const cardStyle = {
+    background: "white",
+    borderRadius: "24px",
+    padding: "28px"
+};
+
+const searchStyle = {
+    width: "100%",
+    padding: "18px",
+    marginBottom: "35px"
+};
+
 const inputStyle = {
+    width: "100%",
+    padding: "14px",
+    marginTop: "15px"
+};
 
-    width:
-        "100%",
-
-    padding:
-        "14px",
-
-    marginTop:
-        "15px",
-
-    borderRadius:
-        "12px",
-
-    border:
-        "1px solid #ccc",
-
-    fontSize:
-        "15px",
-
-    boxSizing:
-        "border-box"
+const bookBtn = {
+    width: "100%",
+    padding: "16px",
+    background: "#1b1b78",
+    border: "none",
+    color: "white",
+    borderRadius: "14px",
+    marginTop: "18px",
+    cursor: "pointer"
 };
 
 export default UserDashboard;

@@ -3,13 +3,7 @@ import {
     useLocation
 } from "react-router-dom";
 
-function UserSidebar({
-
-                         user,
-
-                         setUser
-
-                     }) {
+function UserSidebar() {
 
     const navigate =
         useNavigate();
@@ -17,23 +11,41 @@ function UserSidebar({
     const location =
         useLocation();
 
+    const user =
+        JSON.parse(
+            localStorage.getItem(
+                "user"
+            )
+        );
+
+    // =====================
+    // LOGOUT
+    // =====================
+
     const logout = () => {
 
-        localStorage.clear();
-
-        setUser(null);
+        localStorage.removeItem(
+            "user"
+        );
 
         navigate("/");
     };
 
+    // =====================
+    // BUTTON STYLE
+    // =====================
+
     const menuButton =
         (path) => ({
 
-            width: "100%",
+            width:
+                "100%",
 
-            padding: "16px",
+            padding:
+                "16px",
 
-            border: "none",
+            border:
+                "none",
 
             borderRadius:
                 "14px",
@@ -54,8 +66,8 @@ function UserSidebar({
                 "0.3s",
 
             background:
-                location.pathname ===
-                path
+                location.pathname
+                === path
                     ? "#4d4de3"
                     : "#2d2d74",
 
@@ -70,7 +82,8 @@ function UserSidebar({
 
         <div
             style={{
-                width: "240px",
+                width:
+                    "240px",
 
                 background:
                     "#15154d",
@@ -93,24 +106,26 @@ function UserSidebar({
             }}
         >
 
-            {/* HEADER */}
+            {/* TITLE */}
 
             <h1
                 style={{
                     marginBottom:
-                        "8px"
+                        "10px"
                 }}
             >
                 User Panel
             </h1>
 
+            {/* USER */}
+
             <p
                 style={{
-                    color:
-                        "#ccc",
+                    opacity:
+                        0.8,
 
                     marginBottom:
-                        "25px"
+                        "20px"
                 }}
             >
                 Welcome,
@@ -120,7 +135,15 @@ function UserSidebar({
                 }
             </p>
 
-            <hr />
+            <hr
+                style={{
+                    border:
+                        "1px solid rgba(255,255,255,0.2)",
+
+                    marginBottom:
+                        "25px"
+                }}
+            />
 
             {/* DASHBOARD */}
 
@@ -142,12 +165,12 @@ function UserSidebar({
 
             <button
                 style={menuButton(
-                    "/user/profile"
+                    "/profile"
                 )}
 
                 onClick={() =>
                     navigate(
-                        "/user/profile"
+                        "/profile"
                     )
                 }
             >
@@ -158,12 +181,12 @@ function UserSidebar({
 
             <button
                 style={menuButton(
-                    "/user/bookings"
+                    "/my-bookings"
                 )}
 
                 onClick={() =>
                     navigate(
-                        "/user/bookings"
+                        "/my-bookings"
                     )
                 }
             >
@@ -174,7 +197,9 @@ function UserSidebar({
 
             <button
                 style={{
-                    ...menuButton(""),
+                    ...menuButton(
+                        ""
+                    ),
 
                     background:
                         "#ff1a1a",
@@ -183,7 +208,9 @@ function UserSidebar({
                         "30px"
                 }}
 
-                onClick={logout}
+                onClick={
+                    logout
+                }
             >
                 🚪 Logout
             </button>
