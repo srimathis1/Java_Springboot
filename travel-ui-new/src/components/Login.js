@@ -6,7 +6,8 @@ function Login({ setUser }) {
     const navigate = useNavigate();
 
     const [role, setRole] = useState("");
-    const [isRegister, setIsRegister] = useState(false);
+    const [isRegister, setIsRegister] =
+        useState(false);
 
     const [form, setForm] = useState({
         username: "",
@@ -17,7 +18,8 @@ function Login({ setUser }) {
     const handleChange = (e) => {
         setForm({
             ...form,
-            [e.target.name]: e.target.value
+            [e.target.name]:
+            e.target.value
         });
     };
 
@@ -33,13 +35,17 @@ function Login({ setUser }) {
         ) {
 
             const adminUser = {
-                username: "admin",
-                role: "ADMIN"
+                username:
+                    "admin",
+                role:
+                    "ADMIN"
             };
 
             localStorage.setItem(
                 "user",
-                JSON.stringify(adminUser)
+                JSON.stringify(
+                    adminUser
+                )
             );
 
             setUser(adminUser);
@@ -49,7 +55,7 @@ function Login({ setUser }) {
         } else {
 
             alert(
-                "Wrong password ❌"
+                "Wrong password"
             );
         }
     };
@@ -58,65 +64,66 @@ function Login({ setUser }) {
     // USER LOGIN
     // ======================
 
-    const userLogin = async () => {
+    const userLogin =
+        async () => {
 
-        try {
+            try {
 
-            const res =
-                await fetch(
+                const res =
+                    await fetch(
 
-                    "http://localhost:8080/auth/login",
+                        "http://localhost:8080/auth/login",
 
-                    {
-                        method: "POST",
+                        {
+                            method:
+                                "POST",
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
 
-                        body: JSON.stringify({
+                            body:
+                                JSON.stringify({
+                                    username:
+                                    form.username,
 
-                            username:
-                            form.username,
+                                    password:
+                                    form.password
+                                })
+                        }
+                    );
 
-                            password:
-                            form.password
-                        })
-                    }
+                if (!res.ok)
+                    throw new Error();
+
+                const data =
+                    await res.json();
+
+                const userData = {
+                    ...data,
+                    role:
+                        "USER"
+                };
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(
+                        userData
+                    )
                 );
 
-            if (!res.ok)
-                throw new Error();
+                setUser(userData);
 
-            const data =
-                await res.json();
+                navigate("/user");
 
-            const userData = {
+            } catch {
 
-                ...data,
-
-                role: "USER"
-            };
-
-            localStorage.setItem(
-
-                "user",
-
-                JSON.stringify(userData)
-            );
-
-            setUser(userData);
-
-            navigate("/user");
-
-        } catch {
-
-            alert(
-                "Login failed ❌"
-            );
-        }
-    };
+                alert(
+                    "Login Failed"
+                );
+            }
+        };
 
     // ======================
     // REGISTER
@@ -152,80 +159,318 @@ function Login({ setUser }) {
                     throw new Error();
 
                 alert(
-                    "Registered Successfully ✅"
+                    "Registered Successfully"
                 );
 
-                setIsRegister(false);
+                setIsRegister(
+                    false
+                );
 
             } catch {
 
                 alert(
-                    "Registration Failed ❌"
+                    "Registration Failed"
                 );
             }
         };
 
     return (
 
-        <div style={styles.container}>
+        <div
+            style={{
+                minHeight:
+                    "100vh",
+
+                display:
+                    "flex",
+
+                justifyContent:
+                    "center",
+
+                alignItems:
+                    "center",
+
+                flexWrap:
+                    "wrap",
+
+                gap:
+                    "60px",
+
+                padding:
+                    "50px 8%",
+
+                background:
+                    "linear-gradient(135deg,#071952,#0B57D0,#3B82F6)",
+
+                position:
+                    "relative",
+
+                overflow:
+                    "hidden"
+            }}
+        >
+
+            {/* FLOATING CIRCLES */}
+
+            <div
+                style={{
+                    position:
+                        "absolute",
+
+                    width:
+                        "300px",
+
+                    height:
+                        "300px",
+
+                    borderRadius:
+                        "50%",
+
+                    background:
+                        "rgba(255,255,255,0.08)",
+
+                    top:
+                        "-100px",
+
+                    right:
+                        "-80px",
+
+                    animation:
+                        "float 6s ease-in-out infinite"
+                }}
+            />
+
+            <div
+                style={{
+                    position:
+                        "absolute",
+
+                    width:
+                        "250px",
+
+                    height:
+                        "250px",
+
+                    borderRadius:
+                        "50%",
+
+                    background:
+                        "rgba(255,255,255,0.06)",
+
+                    bottom:
+                        "-100px",
+
+                    left:
+                        "-70px",
+
+                    animation:
+                        "float 7s ease-in-out infinite"
+                }}
+            />
 
             {/* LEFT SIDE */}
 
-            <div style={styles.leftSection}>
+            <div
+                style={{
+                    flex:
+                        "1",
 
-                <h1 style={styles.logo}>
-                    🌍 TravelEase
+                    minWidth:
+                        "320px",
+
+                    maxWidth:
+                        "650px",
+
+                    color:
+                        "white",
+
+                    zIndex:
+                        2
+                }}
+            >
+
+                <h1
+                    style={{
+                        fontSize:
+                            "clamp(50px,6vw,80px)",
+
+                        fontWeight:
+                            "800",
+
+                        marginBottom:
+                            "20px",
+
+                        letterSpacing:
+                            "1px"
+                    }}
+                >
+                    TravelEase
                 </h1>
 
-                <h2 style={styles.heading}>
-                    Explore India With Comfort
+                <h2
+                    style={{
+                        fontSize:
+                            "clamp(34px,4vw,58px)",
+
+                        lineHeight:
+                            "1.3",
+
+                        marginBottom:
+                            "25px",
+
+                        fontWeight:
+                            "700"
+                    }}
+                >
+                    Discover India
+                    With Comfort &
+                    Confidence
                 </h2>
 
-                <p style={styles.text}>
-                    Book smart, travel safe
-                    and discover amazing
-                    destinations with ease.
+                <p
+                    style={{
+                        fontSize:
+                            "22px",
+
+                        color:
+                            "#dbeafe",
+
+                        lineHeight:
+                            "1.8",
+
+                        marginBottom:
+                            "40px"
+                    }}
+                >
+                    Explore beautiful
+                    destinations,
+                    manage trips,
+                    discover travel
+                    analytics and
+                    enjoy seamless
+                    booking experiences.
                 </p>
 
-                <div style={styles.features}>
+                {/* FEATURES */}
 
-                    <p>
-                        ✈ Smart Booking
+                <Feature
+                    text="Smart Route Booking"
+                />
+
+                <Feature
+                    text="Travel Analytics"
+                />
+
+                <Feature
+                    text="Trip & Vehicle Management"
+                />
+
+                <Feature
+                    text="Customer Reviews & Ratings"
+                />
+
+                {/* QUOTE */}
+
+                <div
+                    style={{
+                        marginTop:
+                            "50px",
+
+                        padding:
+                            "28px",
+
+                        background:
+                            "rgba(255,255,255,0.12)",
+
+                        border:
+                            "1px solid rgba(255,255,255,0.15)",
+
+                        backdropFilter:
+                            "blur(12px)",
+
+                        borderRadius:
+                            "28px",
+
+                        maxWidth:
+                            "550px"
+                    }}
+                >
+                    <p
+                        style={{
+                            margin:
+                                0,
+
+                            fontSize:
+                                "28px",
+
+                            fontStyle:
+                                "italic",
+
+                            lineHeight:
+                                "1.6",
+
+                            color:
+                                "#e0f2fe"
+                        }}
+                    >
+                        "Journey beyond
+                        destinations —
+                        create memorable
+                        experiences
+                        with every trip."
                     </p>
-
-                    <p>
-                        🛡 Safe Travel
-                    </p>
-
-                    <p>
-                        🌄 Best Destinations
-                    </p>
-
-                    <p>
-                        📊 Analytics Based
-                        Recommendations
-                    </p>
-
                 </div>
-
-                <h3 style={styles.quote}>
-                    "Your Journey Starts Here"
-                </h3>
 
             </div>
 
-            {/* RIGHT CARD */}
+            {/* LOGIN CARD */}
 
-            <div style={styles.card}>
+            <div
+                style={{
+                    width:
+                        "100%",
+
+                    maxWidth:
+                        "420px",
+
+                    background:
+                        "rgba(255,255,255,0.14)",
+
+                    backdropFilter:
+                        "blur(18px)",
+
+                    border:
+                        "1px solid rgba(255,255,255,0.15)",
+
+                    borderRadius:
+                        "35px",
+
+                    padding:
+                        "45px",
+
+                    boxShadow:
+                        "0 20px 45px rgba(0,0,0,0.25)",
+
+                    zIndex:
+                        2
+                }}
+            >
 
                 {!role && (
-
                     <>
-
                         <h1
                             style={{
+                                textAlign:
+                                    "center",
+
                                 color:
-                                    "#1e2088"
+                                    "white",
+
+                                marginBottom:
+                                    "10px",
+
+                                fontSize:
+                                    "42px"
                             }}
                         >
                             Welcome
@@ -233,344 +478,360 @@ function Login({ setUser }) {
 
                         <p
                             style={{
+                                textAlign:
+                                    "center",
+
+                                color:
+                                    "#dbeafe",
+
                                 marginBottom:
-                                    "25px"
+                                    "35px"
                             }}
                         >
                             Choose your role
                             to continue
                         </p>
 
-                        <button
-                            style={
-                                styles.button
-                            }
-
+                        <Button
+                            text="Continue as User"
                             onClick={() =>
                                 setRole(
                                     "USER"
                                 )
                             }
-                        >
-                            👤 Continue as User
-                        </button>
+                        />
 
-                        <button
-                            style={
-                                styles.button
-                            }
-
+                        <Button
+                            text="Continue as Admin"
                             onClick={() =>
                                 setRole(
                                     "ADMIN"
                                 )
                             }
-                        >
-                            🛠 Continue as Admin
-                        </button>
-
+                        />
                     </>
                 )}
 
-                {/* ADMIN */}
+                {role === "ADMIN" && (
+                    <>
+                        <Title
+                            text="Admin Login"
+                        />
 
-                {
-                    role ===
-                    "ADMIN" && (
+                        <Input
+                            type="password"
+                            name="password"
+                            placeholder="Enter Password"
+                            onChange={
+                                handleChange
+                            }
+                        />
 
-                        <>
-                            <h2>
-                                Admin Login
-                            </h2>
+                        <Button
+                            text="Login"
+                            onClick={
+                                adminLogin
+                            }
+                        />
 
-                            <input
-                                type="password"
-                                name="password"
-                                placeholder="Enter Password"
-                                style={
-                                    styles.input
-                                }
+                        <Back
+                            onClick={() =>
+                                setRole("")
+                            }
+                        />
+                    </>
+                )}
+
+                {role === "USER" && (
+                    <>
+                        <Title
+                            text={
+                                isRegister
+                                    ? "Create Account"
+                                    : "User Login"
+                            }
+                        />
+
+                        <Input
+                            name="username"
+                            placeholder="Username"
+                            onChange={
+                                handleChange
+                            }
+                        />
+
+                        {isRegister && (
+                            <Input
+                                name="email"
+                                placeholder="Email"
                                 onChange={
                                     handleChange
                                 }
                             />
+                        )}
 
-                            <button
-                                style={
-                                    styles.button
-                                }
+                        <Input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            onChange={
+                                handleChange
+                            }
+                        />
 
-                                onClick={
-                                    adminLogin
-                                }
-                            >
-                                Login
-                            </button>
+                        <Button
+                            text={
+                                isRegister
+                                    ? "Register"
+                                    : "Login"
+                            }
 
-                            <p
-                                style={
-                                    styles.back
-                                }
+                            onClick={
+                                isRegister
+                                    ? registerUser
+                                    : userLogin
+                            }
+                        />
 
-                                onClick={() =>
-                                    setRole("")
-                                }
-                            >
-                                ← Back
-                            </p>
-                        </>
-                    )
-                }
-
-                {/* USER */}
-
-                {
-                    role ===
-                    "USER" && (
-
-                        <>
-                            <h2>
-                                {
-                                    isRegister
-                                        ? "Create Account"
-                                        : "User Login"
-                                }
-                            </h2>
-
-                            <input
-                                name="username"
-                                placeholder="Username"
-                                style={
-                                    styles.input
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
-
-                            {
-                                isRegister && (
-
-                                    <input
-                                        name="email"
-                                        placeholder="Email"
-                                        style={
-                                            styles.input
-                                        }
-                                        onChange={
-                                            handleChange
-                                        }
-                                    />
+                        <p
+                            onClick={() =>
+                                setIsRegister(
+                                    !isRegister
                                 )
                             }
 
-                            <input
-                                type="password"
-                                name="password"
-                                placeholder="Password"
-                                style={
-                                    styles.input
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            />
+                            style={{
+                                textAlign:
+                                    "center",
 
-                            <button
-                                style={
-                                    styles.button
-                                }
+                                color:
+                                    "white",
 
-                                onClick={
-                                    isRegister
-                                        ? registerUser
-                                        : userLogin
-                                }
-                            >
-                                {
-                                    isRegister
-                                        ? "Register"
-                                        : "Login"
-                                }
-                            </button>
+                                cursor:
+                                    "pointer"
+                            }}
+                        >
+                            {
+                                isRegister
+                                    ? "Already have account? Login"
+                                    : "New user? Register"
+                            }
+                        </p>
 
-                            <p
-                                style={
-                                    styles.link
-                                }
-
-                                onClick={() =>
-                                    setIsRegister(
-
-                                        !isRegister
-                                    )
-                                }
-                            >
-                                {
-                                    isRegister
-
-                                        ?
-
-                                        "Already have account? Login"
-
-                                        :
-
-                                        "New User? Register"
-                                }
-                            </p>
-
-                            <p
-                                style={
-                                    styles.back
-                                }
-
-                                onClick={() =>
-                                    setRole("")
-                                }
-                            >
-                                ← Back
-                            </p>
-                        </>
-                    )
-                }
-
+                        <Back
+                            onClick={() =>
+                                setRole("")
+                            }
+                        />
+                    </>
+                )}
             </div>
+
+            <style>
+                {`
+                @keyframes float {
+                    0% {
+                        transform: translateY(0px);
+                    }
+                    50% {
+                        transform: translateY(-20px);
+                    }
+                    100% {
+                        transform: translateY(0px);
+                    }
+                }
+                `}
+            </style>
         </div>
     );
 }
 
-const styles = {
+function Feature({ text }) {
+    return (
+        <div
+            style={{
+                display:
+                    "flex",
 
-    container: {
+                alignItems:
+                    "center",
 
-        minHeight: "100vh",
+                gap:
+                    "14px",
 
-        display: "flex",
+                marginBottom:
+                    "22px",
 
-        justifyContent:
-            "space-between",
+                fontSize:
+                    "22px",
 
-        alignItems: "center",
+                color:
+                    "white"
+            }}
+        >
+            <div
+                style={{
+                    width:
+                        "12px",
 
-        padding: "60px",
+                    height:
+                        "12px",
 
-        background:
-            "linear-gradient(to right,#1e2088,#8bb3d9)"
-    },
+                    borderRadius:
+                        "50%",
 
-    leftSection: {
+                    background:
+                        "#93C5FD"
+                }}
+            />
 
-        width: "50%",
+            {text}
+        </div>
+    );
+}
 
-        color: "white"
-    },
+function Button({
+                    text,
+                    onClick
+                }) {
 
-    logo: {
+    return (
+        <button
+            onClick={onClick}
+            style={{
+                width:
+                    "100%",
 
-        fontSize: "50px",
+                padding:
+                    "18px",
 
-        marginBottom: "20px"
-    },
+                marginBottom:
+                    "18px",
 
-    heading: {
+                border:
+                    "none",
 
-        fontSize: "42px",
+                borderRadius:
+                    "18px",
 
-        marginBottom: "15px"
-    },
+                background:
+                    "linear-gradient(135deg,#2563EB,#3B82F6)",
 
-    text: {
+                color:
+                    "white",
 
-        fontSize: "18px",
+                fontWeight:
+                    "700",
 
-        lineHeight: "30px"
-    },
+                fontSize:
+                    "18px",
 
-    features: {
+                cursor:
+                    "pointer",
 
-        marginTop: "30px",
+                transition:
+                    "0.3s",
 
-        fontSize: "20px",
+                boxShadow:
+                    "0 10px 25px rgba(37,99,235,0.35)"
+            }}
 
-        lineHeight: "40px"
-    },
+            onMouseEnter={(e) => {
+                e.target.style.transform =
+                    "translateY(-3px)";
+            }}
 
-    quote: {
+            onMouseLeave={(e) => {
+                e.target.style.transform =
+                    "translateY(0px)";
+            }}
+        >
+            {text}
+        </button>
+    );
+}
 
-        marginTop: "50px",
+function Input(props) {
 
-        fontStyle: "italic"
-    },
+    return (
+        <input
+            {...props}
+            style={{
+                width:
+                    "100%",
 
-    card: {
+                padding:
+                    "18px",
 
-        width: "400px",
+                marginBottom:
+                    "18px",
 
-        background: "white",
+                borderRadius:
+                    "18px",
 
-        padding: "40px",
+                border:
+                    "1px solid rgba(255,255,255,0.15)",
 
-        borderRadius: "25px",
+                background:
+                    "rgba(255,255,255,0.12)",
 
-        boxShadow:
-            "0 8px 30px rgba(0,0,0,0.2)",
+                color:
+                    "white",
 
-        textAlign: "center"
-    },
+                fontSize:
+                    "16px",
 
-    input: {
+                outline:
+                    "none",
 
-        width: "100%",
+                boxSizing:
+                    "border-box"
+            }}
+        />
+    );
+}
 
-        padding: "15px",
+function Title({ text }) {
 
-        marginBottom: "15px",
+    return (
+        <h2
+            style={{
+                textAlign:
+                    "center",
 
-        borderRadius: "12px",
+                color:
+                    "white",
 
-        border:
-            "1px solid #ccc",
+                marginBottom:
+                    "25px"
+            }}
+        >
+            {text}
+        </h2>
+    );
+}
 
-        fontSize: "16px"
-    },
+function Back({
+                  onClick
+              }) {
 
-    button: {
+    return (
+        <p
+            onClick={onClick}
+            style={{
+                textAlign:
+                    "center",
 
-        width: "100%",
+                color:
+                    "#dbeafe",
 
-        padding: "15px",
-
-        background:
-            "#1e2088",
-
-        color: "white",
-
-        border: "none",
-
-        borderRadius: "12px",
-
-        fontSize: "17px",
-
-        cursor: "pointer",
-
-        marginBottom: "15px"
-    },
-
-    link: {
-
-        color: "#1e2088",
-
-        cursor: "pointer"
-    },
-
-    back: {
-
-        cursor: "pointer",
-
-        marginTop: "15px",
-
-        color: "#666"
-    }
-};
+                cursor:
+                    "pointer"
+            }}
+        >
+            ← Back
+        </p>
+    );
+}
 
 export default Login;

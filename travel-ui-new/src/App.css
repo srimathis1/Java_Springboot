@@ -1,6 +1,8 @@
 /* =========================
-   GLOBAL
+   GOOGLE FONT STYLE
 ========================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 *{
   margin:0;
@@ -9,19 +11,19 @@
 }
 
 body{
-  font-family:'Segoe UI',sans-serif;
-  background:#eef3ff;
+  font-family:'Poppins',sans-serif;
+  background:#eef2ff;
   overflow-x:hidden;
 }
 
-/* Smooth animation */
+/* smooth animation */
+
 button,
 input,
 .route-card,
-.login-card,
-.sidebar-btn,
-.logout-btn{
-  transition:all 0.35s ease;
+.stat-card,
+.sidebar-btn{
+  transition:all .35s ease;
 }
 
 /* =========================
@@ -37,43 +39,43 @@ input,
   background:
           linear-gradient(
                   135deg,
-                  #081a74,
-                  #2747d7,
-                  #79a7ff
+                  #071952 0%,
+                  #0b3d91 50%,
+                  #1e5eff 100%
           );
-  overflow:hidden;
   position:relative;
+  overflow:hidden;
 }
 
-/* animated background blobs */
+/* glow circles */
 
 .login-container::before{
   content:"";
   position:absolute;
-  width:400px;
-  height:400px;
-  border-radius:50%;
+  width:450px;
+  height:450px;
   background:
           rgba(255,255,255,0.08);
-  top:-100px;
-  left:-100px;
-  animation:float1 7s ease-in-out infinite;
+  border-radius:50%;
+  top:-150px;
+  right:-100px;
+  animation:floatOne 8s ease-in-out infinite;
 }
 
 .login-container::after{
   content:"";
   position:absolute;
-  width:300px;
-  height:300px;
-  border-radius:50%;
+  width:320px;
+  height:320px;
   background:
-          rgba(255,255,255,0.07);
-  bottom:-80px;
-  right:-80px;
-  animation:float2 8s ease-in-out infinite;
+          rgba(255,255,255,0.08);
+  border-radius:50%;
+  bottom:-100px;
+  left:-80px;
+  animation:floatTwo 7s ease-in-out infinite;
 }
 
-@keyframes float1{
+@keyframes floatOne{
   0%{
     transform:
             translateY(0px);
@@ -90,7 +92,7 @@ input,
   }
 }
 
-@keyframes float2{
+@keyframes floatTwo{
   0%{
     transform:
             translateY(0px);
@@ -98,178 +100,68 @@ input,
 
   50%{
     transform:
-            translateY(-25px);
+            translateY(-30px);
   }
 
   100%{
     transform:
             translateY(0px);
   }
-}
-
-/* Glassmorphism card */
-
-.login-card{
-  width:430px;
-  background:
-          rgba(255,255,255,0.15);
-
-  backdrop-filter:
-          blur(20px);
-
-  border:
-          1px solid rgba(
-                  255,255,255,0.2);
-
-  box-shadow:
-          0 8px 40px rgba(
-                  0,0,0,0.2);
-
-  border-radius:30px;
-  padding:45px;
-  text-align:center;
-  color:white;
-
-  animation:
-          floatCard 5s ease-in-out infinite;
-}
-
-@keyframes floatCard{
-
-  0%{
-    transform:
-            translateY(0px);
-  }
-
-  50%{
-    transform:
-            translateY(-12px);
-  }
-
-  100%{
-    transform:
-            translateY(0px);
-  }
-}
-
-.login-card h1,
-.login-card h2{
-  margin-bottom:15px;
-  color:white;
-}
-
-.login-card p{
-  color:#e3e8ff;
-}
-
-.login-card input{
-  width:100%;
-  padding:16px;
-  margin-top:15px;
-  border:none;
-  border-radius:14px;
-  background:
-          rgba(255,255,255,0.2);
-
-  color:white;
-  font-size:16px;
-  outline:none;
-}
-
-.login-card input::placeholder{
-  color:#dde5ff;
-}
-
-.login-card input:focus{
-  background:
-          rgba(255,255,255,0.3);
-
-  transform:
-          scale(1.02);
-}
-
-/* premium buttons */
-
-.login-card button{
-  width:100%;
-  padding:16px;
-  margin-top:18px;
-  border:none;
-  border-radius:14px;
-  background:
-          linear-gradient(
-                  135deg,
-                  #0a1f99,
-                  #3558ff
-          );
-
-  color:white;
-  font-size:17px;
-  cursor:pointer;
-  font-weight:600;
-}
-
-.login-card button:hover{
-  transform:
-          translateY(-4px)
-          scale(1.03);
-
-  box-shadow:
-          0 8px 25px rgba(
-                  53,88,255,0.4);
 }
 
 /* =========================
-   USER LAYOUT
+   USER DASHBOARD
 ========================= */
 
 .user-layout{
   display:flex;
   min-height:100vh;
-  background:#edf3ff;
+  background:#f5f7ff;
 }
 
-.user-sidebar{
-  width:280px;
+.user-main{
+  flex:1;
+  padding:35px;
+}
 
+/* =========================
+   SIDEBAR
+========================= */
+
+.user-sidebar{
+  width:270px;
   background:
           linear-gradient(
                   180deg,
-                  #091b7a,
-                  #142aa5
+                  #071952,
+                  #0b3d91
           );
 
   color:white;
-  padding:30px 20px;
+  padding:28px 20px;
 
   box-shadow:
           4px 0 20px rgba(
-                  0,0,0,0.15);
-}
+                  0,0,0,0.15
+          );
 
-.user-sidebar h2{
-  margin-bottom:25px;
-  font-size:34px;
-}
-
-.user-info{
-  margin-bottom:30px;
+  transition:
+          0.4s ease;
 }
 
 .sidebar-btn{
-
   width:100%;
-  padding:16px;
   border:none;
   border-radius:16px;
-
-  background:
-          rgba(255,255,255,0.12);
-
+  padding:16px;
+  margin-bottom:16px;
   color:white;
-  margin-bottom:18px;
+  background:
+          rgba(255,255,255,0.08);
+
   cursor:pointer;
-  font-size:17px;
+  font-size:16px;
+  font-weight:500;
 }
 
 .sidebar-btn:hover{
@@ -277,8 +169,8 @@ input,
   background:
           linear-gradient(
                   135deg,
-                  #4b67ff,
-                  #6d89ff
+                  #1f65ff,
+                  #4f85ff
           );
 
   transform:
@@ -286,49 +178,35 @@ input,
 }
 
 .logout-btn{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:16px;
-  background:#ff2e55;
-  color:white;
-  cursor:pointer;
-  font-size:17px;
-}
-
-.logout-btn:hover{
-  transform:
-          scale(1.04);
-
-  background:#ff1744;
+  background:
+          linear-gradient(
+                  135deg,
+                  #ff416c,
+                  #ff4b2b
+          ) !important;
 }
 
 /* =========================
-   USER MAIN
+   SEARCH
 ========================= */
-
-.user-main{
-  flex:1;
-  padding:35px;
-}
-
-.user-header{
-  margin-bottom:25px;
-}
 
 .search-box input{
   width:100%;
   padding:18px;
-  border-radius:18px;
   border:none;
+  border-radius:18px;
   background:white;
   box-shadow:
-          0 4px 14px rgba(
-                  0,0,0,0.08);
-  margin-bottom:30px;
+          0 8px 20px rgba(
+                  0,0,0,0.06
+          );
+
+  font-size:16px;
 }
 
 .search-box input:focus{
+  outline:none;
+
   transform:
           scale(1.01);
 }
@@ -342,19 +220,20 @@ input,
 
   grid-template-columns:
   repeat(auto-fit,
-  minmax(320px,1fr));
+  minmax(330px,1fr));
 
   gap:25px;
 }
 
 .route-card{
   background:white;
-  padding:28px;
   border-radius:28px;
+  padding:28px;
 
   box-shadow:
-          0 8px 25px rgba(
-                  0,0,0,0.08);
+          0 8px 24px rgba(
+                  0,0,0,0.08
+          );
 
   border:
           1px solid #edf2ff;
@@ -366,78 +245,64 @@ input,
           translateY(-10px);
 
   box-shadow:
-          0 15px 35px rgba(
-                  53,88,255,0.2);
+          0 18px 30px rgba(
+                  30,94,255,0.16
+          );
 }
 
 .route-card h3{
-  margin-bottom:15px;
-  color:#112299;
-  font-size:28px;
+  color:#0b3d91;
+  margin-bottom:14px;
 }
-
-.route-card p{
-  margin-bottom:10px;
-}
-
-/* =========================
-   BOOK BUTTON
-========================= */
 
 .book-btn{
   width:100%;
-  padding:16px;
   border:none;
   border-radius:14px;
+  padding:16px;
+  margin-top:16px;
 
   background:
           linear-gradient(
                   135deg,
-                  #0a1f99,
-                  #3b60ff
+                  #0b3d91,
+                  #1e5eff
           );
 
   color:white;
-  cursor:pointer;
-  margin-top:18px;
   font-size:16px;
-  font-weight:600;
+  cursor:pointer;
 }
 
 .book-btn:hover{
 
   transform:
-          translateY(-4px)
-          scale(1.02);
+          translateY(-4px);
 
   box-shadow:
           0 10px 25px rgba(
-                  59,96,255,0.35);
+                  30,94,255,0.3
+          );
 }
 
 /* =========================
-   DASHBOARD CARDS
+   ADMIN DASHBOARD
 ========================= */
-
-.stats-grid{
-  display:grid;
-  grid-template-columns:
-  repeat(3,1fr);
-  gap:25px;
-}
 
 .stat-card{
   background:white;
-  padding:35px;
   border-radius:24px;
+  padding:30px;
   text-align:center;
 
   box-shadow:
-          0 6px 18px rgba(
-                  0,0,0,0.08);
+          0 8px 22px rgba(
+                  0,0,0,0.08
+          );
 }
 
 .stat-card:hover{
+
   transform:
           translateY(-8px);
 }
@@ -451,6 +316,6 @@ input,
 }
 
 ::-webkit-scrollbar-thumb{
-  background:#3158ff;
+  background:#1e5eff;
   border-radius:20px;
 }

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
     useNavigate,
     useLocation
@@ -5,22 +6,15 @@ import {
 
 function UserSidebar() {
 
-    const navigate =
-        useNavigate();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const location =
-        useLocation();
+    const [collapsed, setCollapsed] =
+        useState(false);
 
-    const user =
-        JSON.parse(
-            localStorage.getItem(
-                "user"
-            )
-        );
-
-    // =====================
-    // LOGOUT
-    // =====================
+    const user = JSON.parse(
+        localStorage.getItem("user")
+    );
 
     const logout = () => {
 
@@ -28,194 +22,323 @@ function UserSidebar() {
             "user"
         );
 
-        navigate("/");
+        window.location.href = "/";
     };
 
-    // =====================
-    // BUTTON STYLE
-    // =====================
-
-    const menuButton =
-        (path) => ({
-
-            width:
-                "100%",
-
-            padding:
-                "16px",
-
-            border:
-                "none",
-
-            borderRadius:
-                "14px",
-
-            marginBottom:
-                "18px",
-
-            cursor:
-                "pointer",
-
-            fontSize:
-                "18px",
-
-            fontWeight:
-                "600",
-
-            transition:
-                "0.3s",
-
-            background:
-                location.pathname
-                === path
-                    ? "#4d4de3"
-                    : "#2d2d74",
-
-            color:
-                "white",
-
-            boxShadow:
-                "0 4px 10px rgba(0,0,0,0.2)"
-        });
+    const isActive = (path) =>
+        location.pathname === path;
 
     return (
 
-        <div
+        <>
+
+            {/* MENU BUTTON */}
+
+            <button
+                onClick={() =>
+                    setCollapsed(
+                        !collapsed
+                    )
+                }
+                style={{
+                    position: "fixed",
+                    top: "20px",
+                    left: collapsed
+                        ? "20px"
+                        : "230px",
+                    zIndex: 9999,
+                    border: "none",
+                    background:
+                        "rgba(255,255,255,0.15)",
+                    backdropFilter:
+                        "blur(20px)",
+                    color: "white",
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "16px",
+                    cursor: "pointer",
+                    fontSize: "22px",
+                    transition: "0.4s",
+                    boxShadow:
+                        "0 8px 20px rgba(0,0,0,0.2)"
+                }}
+            >
+                ☰
+            </button>
+
+            {/* SIDEBAR */}
+
+            <div
+                style={{
+                    width: collapsed
+                        ? "0px"
+                        : "250px",
+
+                    background:
+                        "linear-gradient(180deg,#071952,#0B57D0)",
+
+                    color: "white",
+
+                    minHeight: "100vh",
+
+                    padding:
+                        collapsed
+                            ? "0"
+                            : "30px 20px",
+
+                    position: "fixed",
+
+                    left: 0,
+
+                    top: 0,
+
+                    overflow: "hidden",
+
+                    transition:
+                        "0.4s ease",
+
+                    boxShadow:
+                        "8px 0 25px rgba(0,0,0,0.15)",
+
+                    zIndex: 999
+                }}
+            >
+
+                {/* LOGO */}
+
+                <div
+                    style={{
+                        marginBottom:
+                            "40px"
+                    }}
+                >
+                    <h1
+                        style={{
+                            margin: 0,
+                            fontSize:
+                                "38px",
+                            fontWeight:
+                                "800",
+                            letterSpacing:
+                                "1px"
+                        }}
+                    >
+                        TravelEase
+                    </h1>
+
+                    <p
+                        style={{
+                            color:
+                                "#d8e6ff",
+                            marginTop:
+                                "8px"
+                        }}
+                    >
+                        User Panel
+                    </p>
+                </div>
+
+                {/* USER CARD */}
+
+                <div
+                    style={{
+                        background:
+                            "rgba(255,255,255,0.08)",
+
+                        border:
+                            "1px solid rgba(255,255,255,0.1)",
+
+                        borderRadius:
+                            "22px",
+
+                        padding:
+                            "18px",
+
+                        marginBottom:
+                            "30px",
+
+                        backdropFilter:
+                            "blur(20px)"
+                    }}
+                >
+                    <p
+                        style={{
+                            margin: 0,
+                            opacity: 0.8
+                        }}
+                    >
+                        Welcome
+                    </p>
+
+                    <h2
+                        style={{
+                            marginTop:
+                                "8px",
+                            fontSize:
+                                "28px"
+                        }}
+                    >
+                        {
+                            user?.username
+                        }
+                    </h2>
+                </div>
+
+                {/* BUTTONS */}
+
+                <SidebarButton
+                    active={
+                        isActive(
+                            "/user"
+                        )
+                    }
+                    text="🏠 Dashboard"
+                    onClick={() =>
+                        navigate(
+                            "/user"
+                        )
+                    }
+                />
+
+                <SidebarButton
+                    active={
+                        isActive(
+                            "/profile"
+                        )
+                    }
+                    text="👤 Profile"
+                    onClick={() =>
+                        navigate(
+                            "/profile"
+                        )
+                    }
+                />
+
+                <SidebarButton
+                    active={
+                        isActive(
+                            "/my-bookings"
+                        )
+                    }
+                    text="📖 My Bookings"
+                    onClick={() =>
+                        navigate(
+                            "/my-bookings"
+                        )
+                    }
+                />
+
+                <button
+                    onClick={
+                        logout
+                    }
+                    style={{
+                        width:
+                            "100%",
+
+                        marginTop:
+                            "40px",
+
+                        padding:
+                            "16px",
+
+                        border:
+                            "none",
+
+                        borderRadius:
+                            "18px",
+
+                        background:
+                            "linear-gradient(135deg,#ff3d3d,#ff1f1f)",
+
+                        color:
+                            "white",
+
+                        fontWeight:
+                            "700",
+
+                        fontSize:
+                            "17px",
+
+                        cursor:
+                            "pointer",
+
+                        transition:
+                            "0.3s",
+
+                        boxShadow:
+                            "0 8px 20px rgba(255,0,0,0.25)"
+                    }}
+                >
+                    🚪 Logout
+                </button>
+
+            </div>
+        </>
+    );
+}
+
+/* BUTTON COMPONENT */
+
+function SidebarButton({
+                           text,
+                           onClick,
+                           active
+                       }) {
+
+    return (
+
+        <button
+            onClick={
+                onClick
+            }
             style={{
                 width:
-                    "240px",
+                    "100%",
 
-                background:
-                    "#15154d",
+                padding:
+                    "18px",
+
+                border:
+                    "none",
+
+                borderRadius:
+                    "18px",
+
+                marginBottom:
+                    "18px",
+
+                cursor:
+                    "pointer",
 
                 color:
                     "white",
 
-                minHeight:
-                    "100vh",
+                fontSize:
+                    "18px",
 
-                padding:
-                    "28px",
+                fontWeight:
+                    "600",
 
-                position:
-                    "fixed",
+                background:
+                    active
+                        ? "linear-gradient(135deg,#3B82F6,#2563EB)"
+                        : "rgba(255,255,255,0.08)",
 
-                left: 0,
+                backdropFilter:
+                    "blur(20px)",
 
-                top: 0
+                boxShadow:
+                    active
+                        ? "0 10px 30px rgba(59,130,246,0.35)"
+                        : "none",
+
+                transition:
+                    "0.35s ease"
             }}
         >
-
-            {/* TITLE */}
-
-            <h1
-                style={{
-                    marginBottom:
-                        "10px"
-                }}
-            >
-                User Panel
-            </h1>
-
-            {/* USER */}
-
-            <p
-                style={{
-                    opacity:
-                        0.8,
-
-                    marginBottom:
-                        "20px"
-                }}
-            >
-                Welcome,
-                {" "}
-                {
-                    user?.username
-                }
-            </p>
-
-            <hr
-                style={{
-                    border:
-                        "1px solid rgba(255,255,255,0.2)",
-
-                    marginBottom:
-                        "25px"
-                }}
-            />
-
-            {/* DASHBOARD */}
-
-            <button
-                style={menuButton(
-                    "/user"
-                )}
-
-                onClick={() =>
-                    navigate(
-                        "/user"
-                    )
-                }
-            >
-                🏠 Dashboard
-            </button>
-
-            {/* PROFILE */}
-
-            <button
-                style={menuButton(
-                    "/profile"
-                )}
-
-                onClick={() =>
-                    navigate(
-                        "/profile"
-                    )
-                }
-            >
-                👤 Profile
-            </button>
-
-            {/* BOOKINGS */}
-
-            <button
-                style={menuButton(
-                    "/my-bookings"
-                )}
-
-                onClick={() =>
-                    navigate(
-                        "/my-bookings"
-                    )
-                }
-            >
-                📖 My Bookings
-            </button>
-
-            {/* LOGOUT */}
-
-            <button
-                style={{
-                    ...menuButton(
-                        ""
-                    ),
-
-                    background:
-                        "#ff1a1a",
-
-                    marginTop:
-                        "30px"
-                }}
-
-                onClick={
-                    logout
-                }
-            >
-                🚪 Logout
-            </button>
-
-        </div>
+            {text}
+        </button>
     );
 }
 

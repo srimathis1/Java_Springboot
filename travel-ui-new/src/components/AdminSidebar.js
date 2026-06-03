@@ -1,173 +1,338 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, {
+    useState
+} from "react";
+
+import {
+    useNavigate,
+    useLocation
+} from "react-router-dom";
 
 function AdminSidebar() {
 
-    const navigate = useNavigate();
-    const location = useLocation();
+    const navigate =
+        useNavigate();
 
-    const logout = () => {
+    const location =
+        useLocation();
 
-        localStorage.removeItem("user");
+    const [collapsed,
+        setCollapsed
+    ] = useState(false);
 
-        window.location.href = "/";
-    };
+    const logout =
+        () => {
 
-    const isActive = (path) => {
-        return location.pathname === path;
-    };
+            localStorage
+                .removeItem(
+                    "user"
+                );
+
+            window.location
+                .href = "/";
+        };
+
+    const isActive =
+        (path) =>
+            location
+                .pathname
+            === path;
 
     return (
+        <>
 
-        <div
-            style={{
-                width: "260px",
-                background: "#171752",
-                color: "white",
-                minHeight: "100vh",
-                padding: "25px",
-                boxSizing: "border-box",
-                boxShadow:
-                    "4px 0 10px rgba(0,0,0,0.1)"
-            }}
-        >
+            {/* MENU BUTTON */}
 
-            {/* LOGO / TITLE */}
+            <button
+                onClick={() =>
+                    setCollapsed(
+                        !collapsed
+                    )
+                }
+
+                style={{
+                    position:
+                        "fixed",
+
+                    top:
+                        "20px",
+
+                    left:
+                        collapsed
+                            ? "20px"
+                            : "230px",
+
+                    zIndex:
+                        9999,
+
+                    width:
+                        "50px",
+
+                    height:
+                        "50px",
+
+                    border:
+                        "none",
+
+                    borderRadius:
+                        "16px",
+
+                    background:
+                        "rgba(255,255,255,0.15)",
+
+                    backdropFilter:
+                        "blur(20px)",
+
+                    color:
+                        "white",
+
+                    fontSize:
+                        "22px",
+
+                    cursor:
+                        "pointer",
+
+                    transition:
+                        "0.4s",
+
+                    boxShadow:
+                        "0 8px 20px rgba(0,0,0,0.2)"
+                }}
+            >
+                ☰
+            </button>
+
+            {/* SIDEBAR */}
 
             <div
                 style={{
-                    marginBottom: "35px"
+                    width:
+                        collapsed
+                            ? "0"
+                            : "250px",
+
+                    background:
+                        "linear-gradient(180deg,#071952,#0B57D0)",
+
+                    minHeight:
+                        "100vh",
+
+                    color:
+                        "white",
+
+                    position:
+                        "fixed",
+
+                    left: 0,
+
+                    top: 0,
+
+                    overflow:
+                        "hidden",
+
+                    transition:
+                        "0.4s ease",
+
+                    padding:
+                        collapsed
+                            ? "0"
+                            : "30px 20px",
+
+                    boxShadow:
+                        "8px 0 25px rgba(0,0,0,0.2)",
+
+                    zIndex:
+                        999
                 }}
             >
-                <h1
-                    style={{
-                        margin: 0,
-                        fontSize: "30px"
-                    }}
-                >
-                    🚀 Admin
-                </h1>
 
-                <p
+                {/* TITLE */}
+
+                <div
                     style={{
-                        color: "#c7c7ff",
-                        marginTop: "8px"
+                        marginBottom:
+                            "40px"
                     }}
                 >
-                    Travel Management
-                </p>
+                    <h1
+                        style={{
+                            margin:
+                                0,
+
+                            fontSize:
+                                "36px",
+
+                            fontWeight:
+                                "800"
+                        }}
+                    >
+                        TravelEase
+                    </h1>
+
+                    <p
+                        style={{
+                            color:
+                                "#dce7ff"
+                        }}
+                    >
+                        Admin Panel
+                    </p>
+                </div>
+
+                <SidebarButton
+                    active={
+                        isActive(
+                            "/admin"
+                        )
+                    }
+
+                    text="📊 Dashboard"
+
+                    onClick={() =>
+                        navigate(
+                            "/admin"
+                        )
+                    }
+                />
+
+                <SidebarButton
+                    active={
+                        isActive(
+                            "/admin/routes"
+                        )
+                    }
+
+                    text="🚗 Trips"
+
+                    onClick={() =>
+                        navigate(
+                            "/admin/routes"
+                        )
+                    }
+                />
+
+                <SidebarButton
+                    active={
+                        isActive(
+                            "/admin/bookings"
+                        )
+                    }
+
+                    text="📖 Bookings"
+
+                    onClick={() =>
+                        navigate(
+                            "/admin/bookings"
+                        )
+                    }
+                />
+
+                {/* LOGOUT */}
+
+                <button
+                    onClick={
+                        logout
+                    }
+
+                    style={{
+                        width:
+                            "100%",
+
+                        marginTop:
+                            "40px",
+
+                        padding:
+                            "16px",
+
+                        border:
+                            "none",
+
+                        borderRadius:
+                            "18px",
+
+                        background:
+                            "linear-gradient(135deg,#ff3d3d,#ff1f1f)",
+
+                        color:
+                            "white",
+
+                        fontWeight:
+                            "700",
+
+                        fontSize:
+                            "17px",
+
+                        cursor:
+                            "pointer"
+                    }}
+                >
+                    🚪 Logout
+                </button>
+
             </div>
-
-            {/* DASHBOARD */}
-
-            <button
-                onClick={() =>
-                    navigate("/admin")
-                }
-                style={{
-                    ...btnStyle,
-                    background:
-                        isActive("/admin")
-                            ? "#5b5be0"
-                            : "#2c2c3e"
-                }}
-            >
-                📊 Dashboard
-            </button>
-
-            {/* TRIPS / VEHICLES */}
-
-            <button
-                onClick={() =>
-                    navigate("/admin/routes")
-                }
-                style={{
-                    ...btnStyle,
-                    background:
-                        isActive("/admin/routes")
-                            ? "#5b5be0"
-                            : "#2c2c3e"
-                }}
-            >
-                🚗 Trips
-            </button>
-
-            {/* BOOKINGS */}
-
-            <button
-                onClick={() =>
-                    navigate("/admin/bookings")
-                }
-                style={{
-                    ...btnStyle,
-                    background:
-                        isActive("/admin/bookings")
-                            ? "#5b5be0"
-                            : "#2c2c3e"
-                }}
-            >
-                📖 Bookings
-            </button>
-
-            {/* ANALYTICS */}
-
-            <button
-                onClick={() =>
-                    navigate("/admin/analytics")
-                }
-                style={{
-                    ...btnStyle,
-                    background:
-                        isActive("/admin/analytics")
-                            ? "#5b5be0"
-                            : "#2c2c3e"
-                }}
-            >
-                📈 Analytics
-            </button>
-
-            {/* LOGOUT */}
-
-            <button
-                onClick={logout}
-                style={{
-                    ...btnStyle,
-                    background: "red",
-                    marginTop: "50px"
-                }}
-            >
-                🚪 Logout
-            </button>
-
-        </div>
+        </>
     );
 }
 
-const btnStyle = {
+function SidebarButton({
+                           text,
+                           onClick,
+                           active
+                       }) {
 
-    display: "block",
+    return (
+        <button
+            onClick={
+                onClick
+            }
 
-    width: "100%",
+            style={{
+                width:
+                    "100%",
 
-    marginTop: "15px",
+                padding:
+                    "18px",
 
-    padding: "15px",
+                border:
+                    "none",
 
-    background: "#2c2c3e",
+                borderRadius:
+                    "18px",
 
-    color: "white",
+                marginBottom:
+                    "18px",
 
-    border: "none",
+                cursor:
+                    "pointer",
 
-    borderRadius: "12px",
+                color:
+                    "white",
 
-    cursor: "pointer",
+                fontSize:
+                    "17px",
 
-    fontSize: "16px",
+                fontWeight:
+                    "600",
 
-    textAlign: "left",
+                background:
+                    active
+                        ? "linear-gradient(135deg,#3B82F6,#2563EB)"
+                        : "rgba(255,255,255,0.08)",
 
-    transition: "0.3s"
-};
+                backdropFilter:
+                    "blur(20px)",
+
+                transition:
+                    "0.3s ease",
+
+                boxShadow:
+                    active
+                        ? "0 8px 25px rgba(59,130,246,0.35)"
+                        : "none"
+            }}
+        >
+            {text}
+        </button>
+    );
+}
 
 export default AdminSidebar;
