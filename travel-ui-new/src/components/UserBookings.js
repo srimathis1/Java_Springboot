@@ -1,9 +1,7 @@
-import React,
-{
+import React, {
     useEffect,
     useState
-}
-    from "react";
+} from "react";
 
 import UserSidebar
     from "./UserSidebar";
@@ -20,6 +18,11 @@ function UserBookings() {
         setFeedbacks
     ] = useState({});
 
+    const [
+        submittedFeedbacks,
+        setSubmittedFeedbacks
+    ] = useState([]);
+
     const user =
         JSON.parse(
             localStorage.getItem(
@@ -30,8 +33,13 @@ function UserBookings() {
     useEffect(() => {
 
         fetchBookings();
+        fetchFeedbacks();
 
     }, []);
+
+    // =====================
+    // FETCH BOOKINGS
+    // =====================
 
     const fetchBookings =
         async () => {
@@ -56,7 +64,9 @@ function UserBookings() {
                         : []
                 );
 
-            } catch (error) {
+            } catch (
+                error
+                ) {
 
                 console.log(
                     error
@@ -65,29 +75,141 @@ function UserBookings() {
         };
 
     // =====================
-    // FEEDBACK LOGIC
+    // FETCH FEEDBACKS
     // =====================
 
-    const canGiveFeedback =
-        (booking) => {
+    const fetchFeedbacks =
+        async () => {
+
+            try {
+
+                const res =
+                    await fetch(
+
+                        "http://localhost:8080/feedback/all"
+                    );
+
+                const data =
+                    await res.json();
+
+                const ids =
+                    data.map(
+
+                        (
+                            feedback
+                        ) =>
+
+                            feedback.bookingId
+                    );
+
+                setSubmittedFeedbacks(
+                    ids
+                );
+
+            } catch {
+
+                console.log(
+                    "Feedback fetch failed"
+                );
+            }
+        };
+
+    // =====================
+    // STATUS LOGIC
+    // =====================
+
+    const getTripStatus =
+        (
+            departureDate,
+            returnDate
+        ) => {
 
             const today =
                 new Date();
 
-            const returnDate =
+            today.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+            const depart =
                 new Date(
+                    departureDate
+                );
+
+            const ret =
+                new Date(
+                    returnDate
+                );
+
+            depart.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+            ret.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+            if (
+                today <
+                depart
+            ) {
+
+                return "UPCOMING";
+            }
+
+            if (
+                today >=
+                depart
+
+                &&
+
+                today <=
+                ret
+            ) {
+
+                return "ONGOING";
+            }
+
+            return "COMPLETED";
+        };
+
+    // =====================
+    // FEEDBACK LOGIC
+    // =====================
+
+    const canGiveFeedback =
+        (
+            booking
+        ) => {
+
+            const status =
+                getTripStatus(
+
+                    booking.departureDate,
+
                     booking.returnDate
                 );
 
             return (
 
-                booking.status ===
+                status ===
                 "COMPLETED"
 
                 &&
 
-                today >=
-                returnDate
+                !submittedFeedbacks.includes(
+
+                    booking.id
+                )
             );
         };
 
@@ -116,6 +238,10 @@ function UserBookings() {
             );
         };
 
+    // =====================
+    // SUBMIT FEEDBACK
+    // =====================
+
     const submitFeedback =
         async (
             booking
@@ -132,7 +258,7 @@ function UserBookings() {
             ) {
 
                 alert(
-                    "Select rating"
+                    "Please select rating"
                 );
 
                 return;
@@ -145,6 +271,7 @@ function UserBookings() {
                     "http://localhost:8080/feedback/add",
 
                     {
+
                         method:
                             "POST",
 
@@ -171,25 +298,23 @@ function UserBookings() {
                                         feedback.rating
                                     ),
 
-                                comments:
-                                    feedback.comments
+                                comment:
+                                    feedback.comment
                                     || ""
                             })
                     }
                 );
 
                 alert(
-                    "Feedback submitted successfully!"
+                    "✅ Feedback Submitted"
                 );
 
-            } catch (error) {
+                fetchFeedbacks();
 
-                console.log(
-                    error
-                );
+            } catch {
 
                 alert(
-                    "Failed to submit feedback"
+                    "❌ Failed to submit feedback"
                 );
             }
         };
@@ -230,337 +355,247 @@ function UserBookings() {
                             "#1e2088",
 
                         fontSize:
-                            "50px",
-
-                        marginBottom:
-                            "30px"
+                            "50px"
                     }}
                 >
                     📖 My Bookings
                 </h1>
 
-                {bookings
-                    .length ===
-                0 ? (
+                <div
+                    style={{
+                        display:
+                            "grid",
 
-                    <div
-                        style={{
-                            background:
-                                "white",
+                        gridTemplateColumns:
+                            "repeat(auto-fit,minmax(370px,1fr))",
 
-                            padding:
-                                "40px",
+                        gap:
+                            "25px"
+                    }}
+                >
 
-                            borderRadius:
-                                "20px",
+                    {
+                        bookings.map(
 
-                            textAlign:
-                                "center",
+                            booking => {
 
-                            boxShadow:
-                                "0 5px 20px rgba(0,0,0,0.1)"
-                        }}
-                    >
-                        <h2>
-                            No Bookings Yet
-                        </h2>
-                    </div>
+                                const status =
+                                    getTripStatus(
 
-                ) : (
+                                        booking.departureDate,
 
-                    bookings.map(
-                        booking => (
-
-                            <div
-                                key={
-                                    booking.id
-                                }
-
-                                style={{
-
-                                    background:
-                                        "white",
-
-                                    borderRadius:
-                                        "25px",
-
-                                    padding:
-                                        "35px",
-
-                                    marginBottom:
-                                        "35px",
-
-                                    boxShadow:
-                                        "0 6px 20px rgba(0,0,0,0.1)"
-                                }}
-                            >
-
-                                <h2
-                                    style={{
-                                        color:
-                                            "#1e2088"
-                                    }}
-                                >
-                                    ✈️ Trip →
-                                    {
-                                        booking.destination
-                                    }
-                                </h2>
-
-                                <p>
-                                    🚘
-                                    Vehicle:
-                                    {" "}
-                                    {
-                                        booking.vehicleType
-                                    }
-                                </p>
-
-                                <p>
-                                    📅
-                                    Departure:
-                                    {" "}
-                                    {
-                                        booking.departureDate
-                                    }
-                                </p>
-
-                                <p>
-                                    ⏰
-                                    Time:
-                                    {" "}
-                                    {
-                                        booking.departureTime
-                                    }
-                                </p>
-
-                                <p>
-                                    🔁
-                                    Return:
-                                    {" "}
-                                    {
                                         booking.returnDate
-                                    }
-                                </p>
+                                    );
 
-                                <p>
-                                    👨‍👩‍👧‍👦
-                                    Family:
-                                    {" "}
-                                    {
-                                        booking.familyMembers
-                                    }
-                                </p>
-
-                                <p>
-                                    💰 ₹
-                                    {
-                                        booking.price
-                                    }
-                                </p>
-
-                                <button
-                                    style={{
-                                        background:
-                                            booking.status ===
-                                            "COMPLETED"
-
-                                                ? "#1e2088"
-
-                                                : "#555",
-
-                                        color:
-                                            "white",
-
-                                        border:
-                                            "none",
-
-                                        padding:
-                                            "14px 30px",
-
-                                        borderRadius:
-                                            "12px",
-
-                                        fontWeight:
-                                            "bold"
-                                    }}
-                                >
-                                    {
-                                        booking.status
-                                    }
-                                </button>
-
-                                {/* FEEDBACK */}
-
-                                {canGiveFeedback(
-                                    booking
-                                ) && (
+                                return (
 
                                     <div
-                                        style={{
-                                            marginTop:
-                                                "35px",
+                                        key={
+                                            booking.id
+                                        }
 
-                                            borderTop:
-                                                "1px solid #ddd",
-
-                                            paddingTop:
-                                                "25px"
-                                        }}
+                                        style={cardStyle}
                                     >
 
-                                        <h3>
-                                            ⭐ Give
-                                            Feedback
-                                        </h3>
-
-                                        <select
-
-                                            onChange={
-                                                (e) =>
-
-                                                    handleFeedback(
-
-                                                        booking.id,
-
-                                                        "rating",
-
-                                                        e.target.value
-                                                    )
+                                        <h2>
+                                            Chennai →
+                                            {
+                                                booking.destination
                                             }
+                                        </h2>
 
-                                            style={{
-
-                                                width:
-                                                    "100%",
-
-                                                padding:
-                                                    "15px",
-
-                                                borderRadius:
-                                                    "12px",
-
-                                                marginTop:
-                                                    "15px"
-                                            }}
-                                        >
-
-                                            <option>
-                                                Select Rating
-                                            </option>
-
-                                            <option value="5">
-                                                ⭐⭐⭐⭐⭐
-                                            </option>
-
-                                            <option value="4">
-                                                ⭐⭐⭐⭐
-                                            </option>
-
-                                            <option value="3">
-                                                ⭐⭐⭐
-                                            </option>
-
-                                            <option value="2">
-                                                ⭐⭐
-                                            </option>
-
-                                            <option value="1">
-                                                ⭐
-                                            </option>
-
-                                        </select>
-
-                                        <textarea
-
-                                            placeholder=
-                                                "Write feedback..."
-
-                                            onChange={
-                                                (e) =>
-
-                                                    handleFeedback(
-
-                                                        booking.id,
-
-                                                        "comments",
-
-                                                        e.target.value
-                                                    )
+                                        <p>
+                                            📅 Departure:
+                                            {" "}
+                                            {
+                                                booking.departureDate
                                             }
+                                        </p>
 
-                                            style={{
+                                        <p>
+                                            🔁 Return:
+                                            {" "}
+                                            {
+                                                booking.returnDate
+                                            }
+                                        </p>
 
-                                                width:
-                                                    "100%",
-
-                                                marginTop:
-                                                    "15px",
-
-                                                padding:
-                                                    "15px",
-
-                                                borderRadius:
-                                                    "12px",
-
-                                                height:
-                                                    "120px"
-                                            }}
-                                        />
+                                        <p>
+                                            💰 ₹
+                                            {
+                                                booking.price
+                                            }
+                                        </p>
 
                                         <button
-
-                                            onClick={() =>
-                                                submitFeedback(
-                                                    booking
-                                                )
-                                            }
-
                                             style={{
-
-                                                marginTop:
-                                                    "15px",
-
+                                                ...statusStyle,
                                                 background:
-                                                    "#1e2088",
 
-                                                color:
-                                                    "white",
+                                                    status ===
+                                                    "COMPLETED"
 
-                                                border:
-                                                    "none",
+                                                        ? "#28a745"
 
-                                                width:
-                                                    "100%",
+                                                        :
 
-                                                padding:
-                                                    "15px",
+                                                        status ===
+                                                        "ONGOING"
 
-                                                borderRadius:
-                                                    "12px",
+                                                            ? "#2196f3"
 
-                                                fontSize:
-                                                    "18px",
-
-                                                fontWeight:
-                                                    "bold"
+                                                            : "#ff9800"
                                             }}
                                         >
-                                            Submit
-                                            Feedback
+                                            {
+                                                status
+                                            }
                                         </button>
 
-                                    </div>
-                                )}
+                                        {
 
-                            </div>
+                                            canGiveFeedback(
+                                                booking
+                                            )
+
+                                            &&
+
+                                            <div
+                                                style={{
+                                                    marginTop:
+                                                        "20px"
+                                                }}
+                                            >
+
+                                                <h3>
+                                                    ⭐ Give Feedback
+                                                </h3>
+
+                                                <select
+                                                    onChange={
+                                                        (e) =>
+                                                            handleFeedback(
+
+                                                                booking.id,
+
+                                                                "rating",
+
+                                                                e.target.value
+                                                            )
+                                                    }
+
+                                                    style={
+                                                        inputStyle
+                                                    }
+                                                >
+
+                                                    <option>
+                                                        Select Rating
+                                                    </option>
+
+                                                    <option value="5">
+                                                        ⭐⭐⭐⭐⭐
+                                                    </option>
+
+                                                    <option value="4">
+                                                        ⭐⭐⭐⭐
+                                                    </option>
+
+                                                    <option value="3">
+                                                        ⭐⭐⭐
+                                                    </option>
+
+                                                    <option value="2">
+                                                        ⭐⭐
+                                                    </option>
+
+                                                    <option value="1">
+                                                        ⭐
+                                                    </option>
+
+                                                </select>
+
+                                                <textarea
+
+                                                    placeholder=
+                                                        "Comment"
+
+                                                    onChange={
+                                                        (e) =>
+                                                            handleFeedback(
+
+                                                                booking.id,
+
+                                                                "comment",
+
+                                                                e.target.value
+                                                            )
+                                                    }
+
+                                                    style={
+                                                        inputStyle
+                                                    }
+                                                />
+
+                                                <button
+                                                    onClick={() =>
+                                                        submitFeedback(
+                                                            booking
+                                                        )
+                                                    }
+
+                                                    style={submitBtn}
+                                                >
+                                                    Submit Feedback
+                                                </button>
+
+                                            </div>
+                                        }
+
+                                    </div>
+                                );
+                            }
                         )
-                    )
-                )}
+                    }
+
+                </div>
 
             </div>
+
         </div>
     );
 }
+
+const cardStyle = {
+    background: "white",
+    borderRadius: "20px",
+    padding: "25px"
+};
+
+const statusStyle = {
+    width: "100%",
+    border: "none",
+    padding: "12px",
+    color: "white",
+    borderRadius: "10px",
+    fontWeight: "bold"
+};
+
+const inputStyle = {
+    width: "100%",
+    padding: "12px",
+    marginTop: "10px",
+    borderRadius: "10px"
+};
+
+const submitBtn = {
+    width: "100%",
+    marginTop: "15px",
+    background: "#1e2088",
+    color: "white",
+    border: "none",
+    padding: "15px",
+    borderRadius: "12px"
+};
 
 export default UserBookings;

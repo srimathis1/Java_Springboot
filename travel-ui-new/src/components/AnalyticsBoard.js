@@ -4,6 +4,7 @@ import React, {
 } from "react";
 
 import {
+    ResponsiveContainer,
     LineChart,
     Line,
     XAxis,
@@ -25,12 +26,9 @@ function AnalyticsBoard() {
         setAnalytics
     ] = useState({
 
-        totalTrips: 0,
-        totalBookings: 0,
-        totalFeedbacks: 0,
-        mostBookedPlace: "-",
-        topRatedPlace: "-",
-        monthlyBookings: {}
+        monthlyBookings: {},
+        bookingsByDestination: [],
+        ratingsByDestination: []
     });
 
     useEffect(() => {
@@ -44,204 +42,168 @@ function AnalyticsBoard() {
             )
             .then(
                 (data) =>
-                    setAnalytics(
-                        data
-                    )
+                    setAnalytics(data)
             )
             .catch(
                 (err) =>
-                    console.log(
-                        err
-                    )
+                    console.log(err)
             );
 
     }, []);
 
-    // ===================
-    // GRAPH DATA
-    // ===================
-
     const monthlyData =
+
         Object.entries(
-            analytics.monthlyBookings || {}
+            analytics.monthlyBookings
+            || {}
         ).map(
-            ([month,
-                 bookings]) => ({
+
+            ([month, bookings]) => ({
+
                 month,
                 bookings
             })
         );
 
-    const destinationData = [
-        {
-            place:
-            analytics.mostBookedPlace,
-            bookings:
-            analytics.totalBookings
-        }
-    ];
+    const bookingsData =
+        analytics
+            .bookingsByDestination
+        || [];
 
-    const ratingData = [
-        {
-            name:
-            analytics.topRatedPlace,
-            value:
-            analytics.totalFeedbacks
-        }
-    ];
+    const ratingsData =
+        analytics
+            .ratingsByDestination
+        || [];
 
     const COLORS = [
+
         "#1e2088",
+        "#3949ab",
         "#5c6bc0",
-        "#7986cb"
+        "#7986cb",
+        "#9fa8da"
     ];
 
     return (
 
         <div
             style={{
-                marginTop:
-                    "30px"
+                marginTop: "20px"
             }}
         >
 
-            {/* LINE GRAPH */}
+            <div style={cardStyle}>
 
-            <div
-                style={
-                    graphCard
-                }
-            >
-
-                <h2>
-                    📈 Monthly Booking Trend
+                <h2 style={titleStyle}>
+                    📈 Travel Trend by Month
                 </h2>
 
-                <LineChart
-                    width={850}
+                <ResponsiveContainer
+                    width="100%"
                     height={300}
-                    data={
-                        monthlyData
-                    }
                 >
 
-                    <CartesianGrid
-                        strokeDasharray=
-                            "3 3"
-                    />
-
-                    <XAxis
-                        dataKey=
-                            "month"
-                    />
-
-                    <YAxis />
-
-                    <Tooltip />
-
-                    <Line
-                        type=
-                            "monotone"
-
-                        dataKey=
-                            "bookings"
-
-                        stroke=
-                            "#1e2088"
-
-                        strokeWidth={
-                            4
-                        }
-                    />
-
-                </LineChart>
-
-            </div>
-
-            {/* BAR GRAPH */}
-
-            <div
-                style={
-                    graphCard
-                }
-            >
-
-                <h2>
-                    🔥 Most Booked Place
-                </h2>
-
-                <BarChart
-                    width={850}
-                    height={300}
-                    data={
-                        destinationData
-                    }
-                >
-
-                    <CartesianGrid
-                        strokeDasharray=
-                            "3 3"
-                    />
-
-                    <XAxis
-                        dataKey=
-                            "place"
-                    />
-
-                    <YAxis />
-
-                    <Tooltip />
-
-                    <Bar
-                        dataKey=
-                            "bookings"
-
-                        fill=
-                            "#1e2088"
-                    />
-
-                </BarChart>
-
-            </div>
-
-            {/* PIE GRAPH */}
-
-            <div
-                style={
-                    graphCard
-                }
-            >
-
-                <h2>
-                    ⭐ Top Rated Place
-                </h2>
-
-                <PieChart
-                    width={850}
-                    height={320}
-                >
-
-                    <Pie
-                        data={
-                            ratingData
-                        }
-
-                        cx="50%"
-                        cy="50%"
-
-                        outerRadius={
-                            110
-                        }
-
-                        dataKey=
-                            "value"
-
-                        label
+                    <LineChart
+                        data={monthlyData}
                     >
 
-                        {
-                            ratingData
-                                .map(
+                        <CartesianGrid
+                            strokeDasharray="3 3"
+                        />
+
+                        <XAxis
+                            dataKey="month"
+                        />
+
+                        <YAxis />
+
+                        <Tooltip />
+
+                        <Line
+                            type="monotone"
+                            dataKey="bookings"
+                            stroke="#1e2088"
+                            strokeWidth={4}
+                        />
+
+                    </LineChart>
+
+                </ResponsiveContainer>
+
+            </div>
+
+            <div style={cardStyle}>
+
+                <h2 style={titleStyle}>
+                    🔥 Most Booked Destinations
+                </h2>
+
+                <ResponsiveContainer
+                    width="100%"
+                    height={350}
+                >
+
+                    <BarChart
+                        data={bookingsData}
+                    >
+
+                        <CartesianGrid
+                            strokeDasharray="3 3"
+                        />
+
+                        <XAxis
+                            dataKey="destination"
+                        />
+
+                        <YAxis />
+
+                        <Tooltip />
+
+                        <Bar
+                            dataKey="count"
+                            fill="#1e2088"
+                            radius={[
+                                10,
+                                10,
+                                0,
+                                0
+                            ]}
+                        />
+
+                    </BarChart>
+
+                </ResponsiveContainer>
+
+            </div>
+
+            <div style={cardStyle}>
+
+                <h2 style={titleStyle}>
+                    ⭐ Average Ratings by Destination
+                </h2>
+
+                <ResponsiveContainer
+                    width="100%"
+                    height={350}
+                >
+
+                    <PieChart>
+
+                        <Pie
+                            data={ratingsData}
+                            dataKey="value"
+                            nameKey="name"
+                            outerRadius={120}
+                            label={({
+                                        name,
+                                        value
+                                    }) =>
+                                `${name}: ${value.toFixed(1)}⭐`
+                            }
+                        >
+
+                            {
+                                ratingsData.map(
 
                                     (
                                         entry,
@@ -249,10 +211,7 @@ function AnalyticsBoard() {
                                     ) => (
 
                                         <Cell
-                                            key={
-                                                index
-                                            }
-
+                                            key={index}
                                             fill={
                                                 COLORS[
                                                 index %
@@ -262,15 +221,17 @@ function AnalyticsBoard() {
                                         />
                                     )
                                 )
-                        }
+                            }
 
-                    </Pie>
+                        </Pie>
 
-                    <Tooltip />
+                        <Tooltip />
 
-                    <Legend />
+                        <Legend />
 
-                </PieChart>
+                    </PieChart>
+
+                </ResponsiveContainer>
 
             </div>
 
@@ -278,22 +239,20 @@ function AnalyticsBoard() {
     );
 }
 
-const graphCard = {
+const titleStyle = {
 
-    background:
-        "white",
+    color: "#1e2088",
+    marginBottom: "20px"
+};
 
-    borderRadius:
-        "25px",
+const cardStyle = {
 
-    padding:
-        "25px",
-
-    marginBottom:
-        "30px",
-
+    background: "white",
+    borderRadius: "20px",
+    padding: "30px",
+    marginBottom: "30px",
     boxShadow:
-        "0 5px 18px rgba(0,0,0,0.1)"
+        "0 5px 15px rgba(0,0,0,0.08)"
 };
 
 export default AnalyticsBoard;

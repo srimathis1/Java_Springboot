@@ -23,51 +23,21 @@ public class AnalyticsService {
                 new HashMap<>();
 
         analytics.put(
-
-                "totalTrips",
-
-                analyticsRepository
-                        .getTotalTrips()
-        );
-
-        analytics.put(
-
-                "totalBookings",
-
-                analyticsRepository
-                        .getTotalBookings()
-        );
-
-        analytics.put(
-
-                "totalFeedbacks",
-
-                analyticsRepository
-                        .getTotalFeedbacks()
-        );
-
-        analytics.put(
-
-                "mostBookedPlace",
-
-                analyticsRepository
-                        .getMostBookedPlace()
-        );
-
-        analytics.put(
-
-                "topRatedPlace",
-
-                analyticsRepository
-                        .getTopRatedPlace()
-        );
-
-        analytics.put(
-
                 "monthlyBookings",
-
                 analyticsRepository
                         .getMonthlyBookings()
+        );
+
+        analytics.put(
+                "bookingsByDestination",
+                analyticsRepository
+                        .getBookingsByDestination()
+        );
+
+        analytics.put(
+                "ratingsByDestination",
+                analyticsRepository
+                        .getRatingsByDestination()
         );
 
         return analytics;

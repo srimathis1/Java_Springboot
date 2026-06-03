@@ -6,6 +6,8 @@ import com.srimathi.project1sb.model.Feedback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,101 +15,88 @@ import java.util.stream.Collectors;
 public class AnalyticsRepository {
 
     @Autowired
-    private BookingRepository
-            bookingRepository;
+    private BookingRepository bookingRepository;
 
     @Autowired
-    private VehicleRepository
-            vehicleRepository;
+    private FeedbackRepository feedbackRepository;
 
     @Autowired
-    private FeedbackRepository
-            feedbackRepository;
+    private VehicleRepository vehicleRepository;
 
-    // ==========================
+    // ======================
     // TOTAL TRIPS
-    // ==========================
+    // ======================
 
-    public long
-    getTotalTrips() {
+    public long getTotalTrips() {
 
-        return vehicleRepository
-                .count();
+        return vehicleRepository.count();
     }
 
-    // ==========================
+    // ======================
     // TOTAL BOOKINGS
-    // ==========================
+    // ======================
 
-    public long
-    getTotalBookings() {
+    public long getTotalBookings() {
 
-        return bookingRepository
-                .count();
+        return bookingRepository.count();
     }
 
-    // ==========================
+    // ======================
     // TOTAL FEEDBACKS
-    // ==========================
+    // ======================
 
-    public long
-    getTotalFeedbacks() {
+    public long getTotalFeedbacks() {
 
-        return feedbackRepository
-                .count();
+        return feedbackRepository.count();
     }
 
-    // ==========================
+    // ======================
     // MOST BOOKED PLACE
-    // ==========================
+    // ======================
 
-    public String
-    getMostBookedPlace() {
+    public String getMostBookedPlace() {
 
-        List<Booking>
-                bookings =
-                bookingRepository
-                        .findAll();
+        List<Booking> bookings =
+                bookingRepository.findAll();
 
-        return bookings
-                .stream()
+        if (bookings.isEmpty()) {
 
-                // ignore null destination
-                .filter(
+            return "No Bookings";
+        }
 
-                        booking ->
+        Map<String, Long> bookingCounts =
 
-                                booking
-                                        .getDestination()
-                                        != null
-                )
+                bookings.stream()
 
-                .collect(
-
-                        Collectors.groupingBy(
-
-                                Booking
-                                        ::getDestination,
-
-                                Collectors
-                                        .counting()
+                        .filter(
+                                booking ->
+                                        booking.getDestination()
+                                                != null
                         )
-                )
 
+                        .collect(
+
+                                Collectors.groupingBy(
+
+                                        Booking
+                                                ::getDestination,
+
+                                        Collectors
+                                                .counting()
+                                )
+                        );
+
+        return bookingCounts
                 .entrySet()
-
                 .stream()
 
                 .max(
-
                         Map.Entry
                                 .comparingByValue()
                 )
 
                 .map(
-
-                        Map.Entry
-                                ::getKey
+                        Map.Entry::getKey
                 )
 
                 .orElse(
@@ -115,208 +104,228 @@ public class AnalyticsRepository {
                 );
     }
 
-    // ==========================
-    // TOP RATED PLACE
-    // ==========================
+    // ======================
+    // BOOKINGS BY DESTINATION
+    // ======================
 
-    public String
-    getTopRatedPlace() {
+    public List<Map<String, Object>>
+    getBookingsByDestination() {
+
+        List<Booking> bookings =
+                bookingRepository.findAll();
+
+        Map<String, Long>
+                bookingCounts =
+
+                bookings.stream()
+
+                        .filter(
+
+                                booking ->
+
+                                        booking.getDestination()
+                                                != null
+                        )
+
+                        .collect(
+
+                                Collectors.groupingBy(
+
+                                        Booking
+                                                ::getDestination,
+
+                                        Collectors
+                                                .counting()
+                                )
+                        );
+
+        List<Map<String, Object>>
+                result =
+                new ArrayList<>();
+
+        bookingCounts.forEach(
+
+                (
+                        destination,
+                        count
+                ) -> {
+
+                    Map<String, Object>
+                            map =
+                            new HashMap<>();
+
+                    map.put(
+                            "destination",
+                            destination
+                    );
+
+                    map.put(
+                            "count",
+                            count
+                    );
+
+                    result.add(map);
+                }
+        );
+
+        return result;
+    }
+
+    // ======================
+    // RATINGS BY DESTINATION
+    // ======================
+
+    public List<Map<String, Object>>
+    getRatingsByDestination() {
 
         List<Feedback>
                 feedbacks =
-                feedbackRepository
-                        .findAll();
+                feedbackRepository.findAll();
 
-        return feedbacks
-                .stream()
+        Map<String, Double>
+                avgRatings =
 
-                // ignore null destination
-                .filter(
+                feedbacks.stream()
 
-                        feedback ->
+                        .filter(
 
-                                feedback
-                                        .getDestination()
-                                        != null
-                )
+                                feedback ->
 
-                .collect(
+                                        feedback.getDestination()
+                                                != null
 
-                        Collectors.groupingBy(
+                                                &&
 
-                                Feedback
-                                        ::getDestination,
-
-                                Collectors
-                                        .averagingDouble(
-
-                                                Feedback
-                                                        ::getRating
-                                        )
+                                                feedback.getRating()
+                                                        != null
                         )
-                )
 
-                .entrySet()
+                        .collect(
 
-                .stream()
+                                Collectors.groupingBy(
 
-                .max(
+                                        Feedback
+                                                ::getDestination,
 
-                        Map.Entry
-                                .comparingByValue()
-                )
+                                        Collectors
+                                                .averagingDouble(
 
-                .map(
+                                                        Feedback
+                                                                ::getRating
+                                                )
+                                )
+                        );
 
-                        Map.Entry
-                                ::getKey
-                )
+        List<Map<String, Object>>
+                result =
+                new ArrayList<>();
 
-                .orElse(
-                        "No Ratings"
-                );
+        avgRatings.forEach(
+
+                (
+                        destination,
+                        rating
+                ) -> {
+
+                    Map<String, Object>
+                            map =
+                            new HashMap<>();
+
+                    map.put(
+                            "name",
+                            destination
+                    );
+
+                    map.put(
+                            "value",
+                            rating
+                    );
+
+                    result.add(map);
+                }
+        );
+
+        return result;
     }
 
-    // ==========================
+    // ======================
     // MONTHLY BOOKINGS
-    // ==========================
+    // ======================
 
     public Map<String, Long>
     getMonthlyBookings() {
 
         List<Booking>
                 bookings =
-                bookingRepository
-                        .findAll();
+                bookingRepository.findAll();
 
         Map<String, Long>
                 monthlyBookings =
                 new LinkedHashMap<>();
 
-        monthlyBookings.put(
-                "Jan", 0L
-        );
+        monthlyBookings.put("Jan", 0L);
+        monthlyBookings.put("Feb", 0L);
+        monthlyBookings.put("Mar", 0L);
+        monthlyBookings.put("Apr", 0L);
+        monthlyBookings.put("May", 0L);
+        monthlyBookings.put("Jun", 0L);
+        monthlyBookings.put("Jul", 0L);
+        monthlyBookings.put("Aug", 0L);
+        monthlyBookings.put("Sep", 0L);
+        monthlyBookings.put("Oct", 0L);
+        monthlyBookings.put("Nov", 0L);
+        monthlyBookings.put("Dec", 0L);
 
-        monthlyBookings.put(
-                "Feb", 0L
-        );
-
-        monthlyBookings.put(
-                "Mar", 0L
-        );
-
-        monthlyBookings.put(
-                "Apr", 0L
-        );
-
-        monthlyBookings.put(
-                "May", 0L
-        );
-
-        monthlyBookings.put(
-                "Jun", 0L
-        );
-
-        monthlyBookings.put(
-                "Jul", 0L
-        );
-
-        monthlyBookings.put(
-                "Aug", 0L
-        );
-
-        monthlyBookings.put(
-                "Sep", 0L
-        );
-
-        monthlyBookings.put(
-                "Oct", 0L
-        );
-
-        monthlyBookings.put(
-                "Nov", 0L
-        );
-
-        monthlyBookings.put(
-                "Dec", 0L
-        );
-
-        for (
-                Booking booking
-                : bookings
-        ) {
+        for (Booking booking : bookings) {
 
             try {
 
-                String
-                        departureDate =
-                        booking
-                                .getDepartureDate();
-
                 if (
-                        departureDate
+                        booking
+                                .getDepartureDate()
                                 == null
                 ) {
 
                     continue;
                 }
 
+                LocalDate date =
+                        LocalDate.parse(
+
+                                booking
+                                        .getDepartureDate(),
+
+                                DateTimeFormatter
+                                        .ofPattern(
+                                                "yyyy-MM-dd"
+                                        )
+                        );
+
                 String month =
-                        departureDate
+                        date.getMonth()
+                                .toString()
                                 .substring(
-                                        5,
-                                        7
+                                        0,
+                                        3
                                 );
 
-                String
-                        monthName =
-                        switch (
-                                month
-                                ) {
-
-                            case "01" ->
-                                    "Jan";
-
-                            case "02" ->
-                                    "Feb";
-
-                            case "03" ->
-                                    "Mar";
-
-                            case "04" ->
-                                    "Apr";
-
-                            case "05" ->
-                                    "May";
-
-                            case "06" ->
-                                    "Jun";
-
-                            case "07" ->
-                                    "Jul";
-
-                            case "08" ->
-                                    "Aug";
-
-                            case "09" ->
-                                    "Sep";
-
-                            case "10" ->
-                                    "Oct";
-
-                            case "11" ->
-                                    "Nov";
-
-                            default ->
-                                    "Dec";
-                        };
+                month =
+                        month.substring(
+                                0,
+                                1
+                        )
+                                +
+                                month.substring(
+                                                1
+                                        )
+                                        .toLowerCase();
 
                 monthlyBookings.put(
 
-                        monthName,
+                        month,
 
                         monthlyBookings.get(
-                                monthName
+                                month
                         ) + 1
                 );
 
@@ -325,7 +334,7 @@ public class AnalyticsRepository {
             ) {
 
                 System.out.println(
-                        "Invalid date format"
+                        "Invalid Date"
                 );
             }
         }

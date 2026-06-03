@@ -35,35 +35,87 @@ function UserDashboard() {
 
     useEffect(() => {
 
-        fetch(
-            "http://localhost:8080/vehicles"
-        )
-            .then(
-                (res) =>
-                    res.json()
-            )
-            .then(
-                (data) => {
-
-                    const activeTrips =
-                        data.filter(
-                            (
-                                v
-                            ) =>
-                                !v.booked
-                        );
-
-                    setVehicles(
-                        activeTrips
-                    );
-                }
-            );
+        fetchVehicles();
 
     }, []);
 
-    // ==================
-    // HANDLE INPUT
-    // ==================
+    // ==========================
+    // FETCH VEHICLES
+    // ==========================
+
+    const fetchVehicles =
+        async () => {
+
+            try {
+
+                const response =
+                    await fetch(
+
+                        "http://localhost:8080/vehicles"
+                    );
+
+                const data =
+                    await response.json();
+
+                const today =
+                    new Date();
+
+                today.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+                // ONLY FRESH ROUTES
+                const activeTrips =
+                    data.filter(
+
+                        (
+                            v
+                        ) => {
+
+                            if (
+                                !v.departureDate
+                            ) {
+
+                                return false;
+                            }
+
+                            const tripDate =
+                                new Date(
+                                    v.departureDate
+                                );
+
+                            tripDate.setHours(
+                                0,
+                                0,
+                                0,
+                                0
+                            );
+
+                            return (
+                                tripDate >=
+                                today
+                            );
+                        }
+                    );
+
+                setVehicles(
+                    activeTrips
+                );
+
+            } catch {
+
+                alert(
+                    "Error loading trips"
+                );
+            }
+        };
+
+    // ==========================
+    // HANDLE INPUT CHANGE
+    // ==========================
 
     const handleInputChange =
         (
@@ -73,7 +125,9 @@ function UserDashboard() {
         ) => {
 
             setBookingDetails(
-                (prev) => ({
+                (
+                    prev
+                ) => ({
 
                     ...prev,
 
@@ -90,9 +144,9 @@ function UserDashboard() {
             );
         };
 
-    // ==================
-    // BOOKING
-    // ==================
+    // ==========================
+    // BOOK VEHICLE
+    // ==========================
 
     const handleBooking =
         async (
@@ -137,7 +191,7 @@ function UserDashboard() {
                         "✅ Booking Successful"
                     );
 
-                    window.location.reload();
+                    fetchVehicles();
 
                 } else {
 
@@ -154,10 +208,16 @@ function UserDashboard() {
             }
         };
 
+    // ==========================
+    // SEARCH FILTER
+    // ==========================
+
     const filteredVehicles =
         vehicles.filter(
 
-            (vehicle) =>
+            (
+                vehicle
+            ) =>
 
                 vehicle.destination
                     ?.toLowerCase()
@@ -194,49 +254,94 @@ function UserDashboard() {
             <div
                 style={{
                     marginLeft:
-                        "300px",
-
-                    padding:
-                        "35px",
+                        "280px",
 
                     width:
-                        "100%"
+                        "100%",
+
+                    padding:
+                        "35px"
                 }}
             >
 
-                <h1>
-                    Welcome {
-                    storedUser
-                        ?.username
-                } 👋
+                <h1
+                    style={{
+                        color:
+                            "#1e2088",
+
+                        fontSize:
+                            "40px",
+
+                        marginBottom:
+                            "10px"
+                    }}
+                >
+                    Welcome,
+                    {" "}
+                    {
+                        storedUser
+                            ?.username
+                    } 👋
                 </h1>
 
-                <p>
-                    Explore best travel routes
+                <p
+                    style={{
+                        marginBottom:
+                            "30px",
+
+                        color:
+                            "#666"
+                    }}
+                >
+                    Explore the best travel routes
                 </p>
 
+                {/* ANALYTICS */}
                 <AnalyticsBoard />
+
+                {/* SEARCH */}
 
                 <input
                     type="text"
 
                     placeholder=
-                        "🔍 Search destination"
+                        "🔍 Search Source or Destination"
 
                     value={
                         search
                     }
 
-                    onChange={(e) =>
-                        setSearch(
-                            e.target.value
-                        )
+                    onChange={
+                        (
+                            e
+                        ) =>
+                            setSearch(
+                                e.target.value
+                            )
                     }
 
-                    style={
-                        searchStyle
-                    }
+                    style={{
+                        width:
+                            "100%",
+
+                        padding:
+                            "16px",
+
+                        borderRadius:
+                            "14px",
+
+                        border:
+                            "1px solid #ddd",
+
+                        marginBottom:
+                            "30px",
+
+                        fontSize:
+                            "16px"
+                    }}
                 />
+
+                {/* ROUTES */}
 
                 <div
                     style={{
@@ -251,90 +356,174 @@ function UserDashboard() {
                     }}
                 >
 
-                    {filteredVehicles.map(
-                        (
-                            vehicle
-                        ) => (
+                    {
+                        filteredVehicles.map(
 
-                            <div
-                                key={
-                                    vehicle.id
-                                }
+                            (
+                                vehicle
+                            ) => (
 
-                                style={
-                                    cardStyle
-                                }
-                            >
-
-                                <h2>
-                                    {
-                                        vehicle.source
-                                    }
-                                    →
-                                    {
-                                        vehicle.destination
-                                    }
-                                </h2>
-
-                                <p>
-                                    ₹
-                                    {
-                                        vehicle.price
-                                    }
-                                </p>
-
-                                <input
-                                    type="date"
-
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            vehicle.id,
-                                            "returnDate",
-                                            e.target.value
-                                        )
+                                <div
+                                    key={
+                                        vehicle.id
                                     }
 
-                                    style={
-                                        inputStyle
-                                    }
-                                />
+                                    style={{
+                                        background:
+                                            "white",
 
-                                <input
-                                    type="number"
+                                        borderRadius:
+                                            "25px",
 
-                                    placeholder=
-                                        "Family Members"
+                                        padding:
+                                            "25px",
 
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            vehicle.id,
-                                            "familyMembers",
-                                            e.target.value
-                                        )
-                                    }
-
-                                    style={
-                                        inputStyle
-                                    }
-                                />
-
-                                <button
-                                    onClick={() =>
-                                        handleBooking(
-                                            vehicle.id
-                                        )
-                                    }
-
-                                    style={
-                                        bookBtn
-                                    }
+                                        boxShadow:
+                                            "0 5px 18px rgba(0,0,0,0.08)"
+                                    }}
                                 >
-                                    Book Now
-                                </button>
 
-                            </div>
+                                    <h2
+                                        style={{
+                                            color:
+                                                "#1e2088"
+                                        }}
+                                    >
+                                        {
+                                            vehicle.source
+                                        }
+                                        →
+                                        {
+                                            vehicle.destination
+                                        }
+                                    </h2>
+
+                                    <hr />
+
+                                    <p>
+                                        🚘 Vehicle:
+                                        {" "}
+                                        {
+                                            vehicle.vehicleType
+                                        }
+                                    </p>
+
+                                    <p>
+                                        🕒 Time:
+                                        {" "}
+                                        {
+                                            vehicle.departureTime
+                                        }
+                                    </p>
+
+                                    <p>
+                                        📅 Date:
+                                        {" "}
+                                        {
+                                            vehicle.departureDate
+                                        }
+                                    </p>
+
+                                    <p>
+                                        💰 ₹
+                                        {
+                                            vehicle.price
+                                        }
+                                    </p>
+
+                                    <input
+                                        type="date"
+
+                                        onChange={
+                                            (
+                                                e
+                                            ) =>
+                                                handleInputChange(
+
+                                                    vehicle.id,
+
+                                                    "returnDate",
+
+                                                    e.target.value
+                                                )
+                                        }
+
+                                        style={
+                                            inputStyle
+                                        }
+                                    />
+
+                                    <input
+                                        type="number"
+
+                                        placeholder=
+                                            "Family Members"
+
+                                        min="1"
+
+                                        onChange={
+                                            (
+                                                e
+                                            ) =>
+                                                handleInputChange(
+
+                                                    vehicle.id,
+
+                                                    "familyMembers",
+
+                                                    e.target.value
+                                                )
+                                        }
+
+                                        style={
+                                            inputStyle
+                                        }
+                                    />
+
+                                    <button
+                                        onClick={
+                                            () =>
+                                                handleBooking(
+                                                    vehicle.id
+                                                )
+                                        }
+
+                                        style={{
+                                            width:
+                                                "100%",
+
+                                            padding:
+                                                "15px",
+
+                                            background:
+                                                "#1e2088",
+
+                                            color:
+                                                "white",
+
+                                            border:
+                                                "none",
+
+                                            borderRadius:
+                                                "12px",
+
+                                            marginTop:
+                                                "15px",
+
+                                            fontWeight:
+                                                "bold",
+
+                                            cursor:
+                                                "pointer"
+                                        }}
+                                    >
+                                        Book Now
+                                    </button>
+
+                                </div>
+                            )
                         )
-                    )}
+                    }
 
                 </div>
 
@@ -344,33 +533,22 @@ function UserDashboard() {
     );
 }
 
-const searchStyle = {
-    width: "100%",
-    padding: "15px",
-    marginBottom: "30px"
-};
-
-const cardStyle = {
-    background: "white",
-    padding: "25px",
-    borderRadius: "25px"
-};
-
 const inputStyle = {
-    width: "100%",
-    padding: "12px",
-    marginTop: "10px"
-};
 
-const bookBtn = {
-    width: "100%",
-    padding: "15px",
-    background: "#1e2088",
-    color: "white",
-    border: "none",
-    borderRadius: "15px",
-    marginTop: "15px",
-    cursor: "pointer"
+    width:
+        "100%",
+
+    padding:
+        "14px",
+
+    marginTop:
+        "12px",
+
+    borderRadius:
+        "10px",
+
+    border:
+        "1px solid #ddd"
 };
 
 export default UserDashboard;
